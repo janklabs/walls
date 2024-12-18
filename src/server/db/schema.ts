@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm"
 import {
   bigint,
+  customType,
   index,
   int,
   mysqlTableCreator,
@@ -18,6 +19,10 @@ import { type AdapterAccount } from "next-auth/adapters"
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const createTable = mysqlTableCreator((name) => `walls_${name}`)
+
+const blob = customType<{ data: Buffer }>({
+  dataType: () => "MEDIUMBLOB",
+})
 
 export const users = createTable("user", {
   id: varchar("id", { length: 255 })
@@ -102,3 +107,15 @@ export const verificationTokens = createTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 )
+
+export const file = createTable("file", {
+  id: bigint("id", { mode: "number", unsigned: true })
+    .primaryKey()
+    .autoincrement(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  blob: blob("blob").notNull(),
+  uploadedBy: varchar("uploaded_by", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  uploadedAt: timestamp("uploaded_at", { mode: "date" }).notNull().defaultNow(),
+})
