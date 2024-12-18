@@ -5,10 +5,13 @@ import { getImageMd } from "@/server/db/queries"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { DeleteFile } from "./_components/delete-file"
-import Link from "next/link"
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const image = await getImageMd(parseInt(params.id))
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const image = await getImageMd(parseInt((await params).id))
   if (!image) {
     notFound()
   }

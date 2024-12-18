@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { uploadFile } from "@/server/actions/uploadFile"
 import { useState } from "react"
-import { type DropzoneOptions, useDropzone } from "react-dropzone"
+import { useDropzone } from "react-dropzone"
 import { toast } from "sonner"
 
 export function Dropzone({ className }: { className?: string }) {
@@ -64,7 +64,7 @@ export function Dropzone({ className }: { className?: string }) {
       })
   }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled,
     accept: {
