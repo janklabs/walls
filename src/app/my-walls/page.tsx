@@ -22,14 +22,18 @@ export default async function Page() {
       <div className="mx-auto flex w-4/5 flex-col gap-8">
         <Dropzone />
         <div className="grid grid-cols-3 gap-4">
-          {uploads.map((upload) => (
-            <Link key={upload.id} href={`/walls/${upload.id}`}>
+          {uploads.map((image) => (
+            <Link
+              key={image.id}
+              href={`/walls/${image.id}`}
+              className="place-self-center"
+            >
               <Image
-                src={`/uploads/${upload.name}`}
-                alt={upload.name}
+                src={`/uploads/${image.name}`}
+                alt={image.name}
                 width={400}
                 height={400}
-                className="rounded-lg transition-transform hover:scale-105"
+                className="w-full rounded-lg transition-transform hover:scale-105"
               />
             </Link>
           ))}

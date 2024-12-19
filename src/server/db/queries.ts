@@ -10,6 +10,7 @@ export async function getUploads(userId: string) {
     })
     .from(file)
     .where(eq(file.uploadedBy, userId))
+    .orderBy(desc(file.uploadedAt))
 }
 
 export async function existsFileName(name: string) {
