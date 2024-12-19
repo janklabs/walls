@@ -70,6 +70,7 @@ export function Dropzone({ className }: { className?: string }) {
     accept: {
       "image/png": [".png"],
       "image/jpeg": [".jpg", ".jpeg"],
+      "image/webp": [".webp"],
     },
   })
 

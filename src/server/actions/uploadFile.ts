@@ -8,6 +8,13 @@ function name(basename: string, count: number) {
   return basename + (count > 1 ? `-${count.toString()}` : "") + ".png"
 }
 
+async function getNormalSize(input: Buffer) {
+  const { width, height, orientation } = await sharp(input).metadata()
+  return (orientation ?? 0) >= 5
+    ? { width: height, height: width }
+    : { width, height }
+}
+
 export async function uploadFile(file: File) {
   const session = await auth()
   if (!session)
@@ -21,6 +28,14 @@ export async function uploadFile(file: File) {
     .png()
     .toBuffer()
 
+  const { width, height } = await getNormalSize(png)
+  if (!width || !height) {
+    return {
+      status: "error" as const,
+      message: "Invalid image",
+    }
+  }
+
   console.log("file name", file.name)
   const basename = file.name.split(".").slice(0, -1).join(".")
   console.log("basename", basename)
@@ -33,6 +48,8 @@ export async function uploadFile(file: File) {
     userId: session.user.id,
     name: name(basename, count),
     blob: png,
+    height,
+    width,
   })
 
   return {

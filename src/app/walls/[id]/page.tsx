@@ -5,6 +5,8 @@ import { getImageMd } from "@/server/db/queries"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { DeleteFile } from "./_components/delete-file"
+import prettyBytes from "pretty-bytes"
+import { Badge } from "@/components/ui/badge"
 
 export default async function Page({
   params,
@@ -32,23 +34,33 @@ export default async function Page({
         height={800}
         className="mx-auto"
       />
-      <div className="flex items-center gap-4">
-        <a href={`/uploads/${image.name}`} download>
-          <Button>Download</Button>
-        </a>
-        <a href={`/uploads/${image.name}`} target="_blank">
-          <Button variant="secondary">Open in new tab</Button>
-        </a>
-        <p className="ml-auto">Uploaded by</p>
-        <div className="flex items-center gap-2 rounded-lg bg-neutral-100 px-2 py-1">
-          <Image
-            src={image.uploader.image ?? ""}
-            alt={image.uploader.name ?? ""}
-            width={24}
-            height={24}
-            className="rounded-full"
-          />
-          <p>{image.uploader.name}</p>
+      <div className="grid grid-cols-3">
+        <div className="flex items-center gap-4">
+          <a href={`/uploads/${image.name}`} download>
+            <Button>Download</Button>
+          </a>
+          <a href={`/uploads/${image.name}`} target="_blank">
+            <Button variant="secondary">Open in new tab</Button>
+          </a>
+        </div>
+        <div className="flex items-center justify-center gap-4">
+          <Badge>
+            {image.width}x{image.height}
+          </Badge>
+          <Badge>{prettyBytes(image.size)}</Badge>
+        </div>
+        <div className="flex items-center gap-4">
+          <p className="ml-auto">Uploaded by</p>
+          <div className="flex items-center gap-2 rounded-lg bg-neutral-100 px-2 py-1">
+            <Image
+              src={image.uploader.image ?? ""}
+              alt={image.uploader.name ?? ""}
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+            <p>{image.uploader.name}</p>
+          </div>
         </div>
       </div>
     </div>

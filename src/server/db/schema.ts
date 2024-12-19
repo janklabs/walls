@@ -118,4 +118,6 @@ export const file = createTable("file", {
     .notNull()
     .references(() => users.id),
   uploadedAt: timestamp("uploaded_at", { mode: "date" }).notNull().defaultNow(),
+  height: int("height", { unsigned: true }).notNull(),
+  width: int("width", { unsigned: true }).notNull(),
 })
