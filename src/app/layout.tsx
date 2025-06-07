@@ -9,7 +9,6 @@ import { Toaster } from "@/components/ui/sonner"
 export const metadata: Metadata = {
   title: "Walls",
   description: "Beautiful backgrounds for your screens",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
 }
 
 const ClashDisplay = localFont({

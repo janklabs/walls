@@ -1,8 +1,8 @@
 import { ensureAuth } from "@/server/auth"
 import { Dropzone } from "./_components/dropzone"
 import { getUploads } from "@/server/db/queries"
-import Image from "next/image"
-import Link from "next/link"
+import { InputUrl } from "./_components/input-url"
+import { Wall } from "@/components/wall"
 
 export default async function Page() {
   const session = await ensureAuth()
@@ -21,23 +21,8 @@ export default async function Page() {
       </div>
       <div className="mx-auto flex w-4/5 flex-col gap-8">
         <Dropzone />
-        <div className="grid grid-cols-3 gap-4">
-          {uploads.map((image) => (
-            <Link
-              key={image.id}
-              href={`/walls/${image.id}`}
-              className="place-self-center"
-            >
-              <Image
-                src={`/uploads/${image.name}`}
-                alt={image.name}
-                width={400}
-                height={400}
-                className="w-full rounded-lg transition-transform hover:scale-105"
-              />
-            </Link>
-          ))}
-        </div>
+        <InputUrl />
+        <Wall images={uploads} />
       </div>
     </div>
   )

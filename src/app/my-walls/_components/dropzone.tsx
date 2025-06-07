@@ -20,8 +20,8 @@ export function Dropzone({ className }: { className?: string }) {
 
   async function handleUpload(file: File) {
     try {
-      if (file.size > 10 * 1024 * 1024) {
-        throw new Error("File exceeds size limit (10MB)")
+      if (file.size > 100 * 1024 * 1024) {
+        throw new Error("File exceeds size limit (100MB)")
       }
       const resp = await uploadFile(file)
       if (resp.status == "success") {

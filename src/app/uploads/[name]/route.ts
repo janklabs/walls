@@ -10,6 +10,6 @@ export async function GET(
   }
 
   const headers = new Headers()
-  headers.set("Content-Type", "image/png")
-  return new Response(image.blob, { headers })
+  headers.set("Content-Type", "image/jpeg")
+  return new Response(image, { headers })
 }

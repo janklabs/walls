@@ -1,28 +1,17 @@
 import { relations, sql } from "drizzle-orm"
 import {
-  bigint,
-  customType,
+  boolean,
   index,
-  int,
-  mysqlTableCreator,
+  integer,
+  pgTableCreator,
   primaryKey,
   text,
   timestamp,
   varchar,
-} from "drizzle-orm/mysql-core"
+} from "drizzle-orm/pg-core"
 import { type AdapterAccount } from "next-auth/adapters"
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
-export const createTable = mysqlTableCreator((name) => `walls_${name}`)
-
-const blob = customType<{ data: Buffer }>({
-  dataType: () => "MEDIUMBLOB",
-})
+export const createTable = pgTableCreator((name) => `walls_${name}`)
 
 export const users = createTable("user", {
   id: varchar("id", { length: 255 })
@@ -33,14 +22,17 @@ export const users = createTable("user", {
   email: varchar("email", { length: 255 }).notNull(),
   emailVerified: timestamp("email_verified", {
     mode: "date",
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
+    withTimezone: true,
+  }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
+  joinedAt: timestamp("joined_at", {
+    mode: "date",
+    withTimezone: true,
+  }).defaultNow(),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
-  sessions: many(sessions),
 }))
 
 export const accounts = createTable(
@@ -58,18 +50,18 @@ export const accounts = createTable(
     }).notNull(),
     refresh_token: text("refresh_token"),
     access_token: text("access_token"),
-    expires_at: int("expires_at"),
+    expires_at: integer("expires_at"),
     token_type: varchar("token_type", { length: 255 }),
     scope: varchar("scope", { length: 255 }),
     id_token: text("id_token"),
     session_state: varchar("session_state", { length: 255 }),
   },
-  (account) => ({
-    compoundKey: primaryKey({
+  (account) => [
+    primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-    userIdIdx: index("account_user_id_idx").on(account.userId),
-  }),
+    index("account_user_id_idx").on(account.userId),
+  ],
 )
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -85,11 +77,12 @@ export const sessions = createTable(
     userId: varchar("user_id", { length: 255 })
       .notNull()
       .references(() => users.id),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    expires: timestamp("expires", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
   },
-  (session) => ({
-    userIdIdx: index("session_user_id_idx").on(session.userId),
-  }),
+  (session) => [index("session_user_id_idx").on(session.userId)],
 )
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -101,23 +94,31 @@ export const verificationTokens = createTable(
   {
     identifier: varchar("identifier", { length: 255 }).notNull(),
     token: varchar("token", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    expires: timestamp("expires", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
   },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  }),
+  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })],
 )
 
 export const file = createTable("file", {
-  id: bigint("id", { mode: "number", unsigned: true })
-    .primaryKey()
-    .autoincrement(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   name: varchar("name", { length: 255 }).notNull().unique(),
-  blob: blob("blob").notNull(),
+  base64: text("base64").notNull(),
   uploadedBy: varchar("uploaded_by", { length: 255 })
     .notNull()
     .references(() => users.id),
   uploadedAt: timestamp("uploaded_at", { mode: "date" }).notNull().defaultNow(),
-  height: int("height", { unsigned: true }).notNull(),
-  width: int("width", { unsigned: true }).notNull(),
+  height: integer("height").notNull(),
+  width: integer("width").notNull(),
+  size: integer("size").notNull(),
+  nsfw: integer("nsfw").notNull().default(0), // 0, 1, or 2
+})
+
+export const settings = createTable("settings", {
+  userId: varchar("user_id", { length: 255 })
+    .primaryKey()
+    .references(() => users.id),
+  redirectToMyWall: boolean("redirect_to_my_wall").notNull().default(false),
 })

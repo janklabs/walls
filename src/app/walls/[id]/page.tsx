@@ -7,6 +7,9 @@ import { notFound } from "next/navigation"
 import { DeleteFile } from "./_components/delete-file"
 import prettyBytes from "pretty-bytes"
 import { Badge } from "@/components/ui/badge"
+import { RenameFile } from "./_components/rename-file"
+import { Nsfw } from "./_components/nsfw"
+import Link from "next/link"
 
 export default async function Page({
   params,
@@ -23,19 +26,26 @@ export default async function Page({
 
   return (
     <div className="mx-auto flex flex-grow flex-col gap-4 p-4 md:w-4/5 md:justify-center md:p-0">
-      <div className="flex justify-between">
+      <div className="flex items-center gap-2">
         <Back />
-        {isOwner ? <DeleteFile id={image.id} /> : null}
+        <Nsfw id={image.id} nsfw={image.nsfw} />
+        {isOwner ? (
+          <div className="col-start-2 flex justify-end gap-2">
+            <RenameFile id={image.id} name={image.name} />
+            <DeleteFile id={image.id} />
+          </div>
+        ) : null}
       </div>
+      <div className="text-center">{image.name}</div>
       <Image
         src={`/uploads/${image.name}`}
         alt={image.name}
         width={1920}
         height={800}
-        className="mx-auto my-auto md:my-0"
+        className="mx-auto my-auto max-h-[60vh] max-w-[80vw] object-contain md:my-0"
       />
       <div className="md:grid-rows-0 grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-3">
-        <div className="col-span-2 row-start-2 flex items-center justify-between gap-4 md:col-span-1 md:row-start-1">
+        <div className="col-span-2 row-start-2 flex items-center justify-between gap-4 md:col-span-1 md:row-start-1 md:justify-normal">
           <a
             href={`/uploads/${image.name}`}
             download
@@ -61,7 +71,10 @@ export default async function Page({
         </div>
         <div className="flex items-center gap-4">
           <p className="ml-auto hidden md:block">Uploaded by</p>
-          <div className="flex items-center gap-2 rounded-lg bg-neutral-100 px-2 py-1">
+          <Link
+            href={`/profile/${image.uploader.id}`}
+            className="flex items-center gap-2 rounded-lg bg-neutral-100 px-2 py-1"
+          >
             <Image
               src={image.uploader.image ?? ""}
               alt={image.uploader.name ?? ""}
@@ -70,7 +83,7 @@ export default async function Page({
               className="rounded-full"
             />
             <p>{image.uploader.name}</p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

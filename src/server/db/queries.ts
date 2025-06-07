@@ -1,12 +1,14 @@
-import { desc, eq, sql } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 import { db } from "."
 import { file, users } from "./schema"
+import { decode } from "base64-arraybuffer"
 
 export async function getUploads(userId: string) {
   return await db
     .select({
       id: file.id,
       name: file.name,
+      nsfw: file.nsfw,
     })
     .from(file)
     .where(eq(file.uploadedBy, userId))
@@ -27,34 +29,39 @@ export async function existsFileName(name: string) {
 export async function insertFile({
   userId,
   name,
-  blob,
+  base64,
   height,
   width,
+  size,
 }: {
   userId: string
   name: string
-  blob: Buffer
+  base64: string
   height: number
   width: number
+  size: number
 }) {
   await db.insert(file).values({
     name,
-    blob: blob,
+    base64,
     uploadedBy: userId,
     height,
     width,
+    size,
   })
 }
 
 export async function getImage(name: string) {
-  const image = await db
-    .select({
-      blob: file.blob,
-    })
-    .from(file)
-    .where(eq(file.name, name))
-    .limit(1)
-  return image[0]
+  const base64 = (
+    await db
+      .select({
+        base64: file.base64,
+      })
+      .from(file)
+      .where(eq(file.name, name))
+      .limit(1)
+  )[0]?.base64
+  return base64 ? decode(base64) : null
 }
 
 export async function getImageMd(id: number) {
@@ -63,9 +70,10 @@ export async function getImageMd(id: number) {
       id: file.id,
       name: file.name,
       uploadedBy: file.uploadedBy,
-      size: sql<number>`LENGTH(${file.blob})`,
+      size: file.size,
       height: file.height,
       width: file.width,
+      nsfw: file.nsfw,
     })
     .from(file)
     .where(eq(file.id, id))
@@ -79,6 +87,7 @@ export async function getImageMd(id: number) {
   const file_size = _file_info[0].size
   const file_height = _file_info[0].height
   const file_width = _file_info[0].width
+  const file_nsfw = _file_info[0].nsfw
 
   const uploader = (
     await db
@@ -98,6 +107,7 @@ export async function getImageMd(id: number) {
     size: file_size,
     width: file_width,
     height: file_height,
+    nsfw: file_nsfw,
     uploader: uploader,
   }
 }
@@ -107,7 +117,17 @@ export async function getHomepageImages() {
     .select({
       id: file.id,
       name: file.name,
+      nsfw: file.nsfw,
     })
     .from(file)
     .orderBy(desc(file.uploadedAt))
+}
+
+export async function updateFile({ id, name }: { id: number; name: string }) {
+  await db
+    .update(file)
+    .set({
+      name,
+    })
+    .where(eq(file.id, id))
 }

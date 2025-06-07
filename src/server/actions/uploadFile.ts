@@ -3,9 +3,11 @@
 import sharp from "sharp"
 import { auth } from "../auth"
 import { existsFileName, insertFile } from "../db/queries"
+import { encode } from "base64-arraybuffer"
+import { revalidatePath } from "next/cache"
 
 function name(basename: string, count: number) {
-  return basename + (count > 1 ? `-${count.toString()}` : "") + ".png"
+  return basename + (count > 1 ? `-${count.toString()}` : "") + ".jpeg"
 }
 
 async function getNormalSize(input: Buffer) {
@@ -24,11 +26,11 @@ export async function uploadFile(file: File) {
     }
   console.log("Upload file", session.user.name, file.name)
 
-  const png = await sharp(await file.arrayBuffer())
-    .png()
+  const jpeg = await sharp(await file.arrayBuffer())
+    .toFormat("jpeg")
     .toBuffer()
 
-  const { width, height } = await getNormalSize(png)
+  const { width, height } = await getNormalSize(jpeg)
   if (!width || !height) {
     return {
       status: "error" as const,
@@ -44,13 +46,18 @@ export async function uploadFile(file: File) {
     count++
   }
 
+  const base64 = encode(jpeg)
+
   await insertFile({
     userId: session.user.id,
     name: name(basename, count),
-    blob: png,
+    base64: base64,
     height,
     width,
+    size: file.size,
   })
+
+  revalidatePath("/my-walls")
 
   return {
     status: "success" as const,
