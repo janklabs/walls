@@ -78,14 +78,16 @@ export function Dropzone({ className }: { className?: string }) {
     <div
       {...getRootProps()}
       className={cn(
-        "flex h-40 flex-col items-center justify-center rounded-xl border-4 border-dashed border-neutral-400",
+        "flex h-40 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-400 bg-neutral-100 transition-colors hover:bg-neutral-200 dark:border-neutral-600 dark:bg-neutral-900 dark:hover:bg-neutral-800",
         className,
       )}
     >
       <input {...getInputProps()} />
-      <p className="text-2xl">Upload some beautiful backgrounds</p>
+      <p className="text-2xl text-neutral-700 dark:text-neutral-300">
+        Upload some beautiful backgrounds
+      </p>
       {uploadingFiles.total > 0 ? (
-        <p className="text-lg text-neutral-600">
+        <p className="text-lg text-neutral-600 dark:text-neutral-400">
           {uploadingFiles.success + uploadingFiles.error ===
           uploadingFiles.total
             ? "Upload finished, refresh to see changes."

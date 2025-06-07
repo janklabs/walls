@@ -46,6 +46,7 @@ export function InputUrl() {
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         className="flex-grow"
+        placeholder="Paste an image link to upload it"
         onKeyDown={async (e) => {
           if (
             (os === "mac" && e.key === "Enter" && e.metaKey) ||

@@ -10,10 +10,16 @@ export async function Navbar() {
   return (
     <nav className="flex justify-between px-4 py-2">
       <div className="flex items-center gap-2">
-        <Link href="/?redirect=false" className="hover:underline">
+        <Link
+          href="/?redirect=false"
+          className="rounded-md px-2 py-1 transition-colors hover:bg-secondary"
+        >
           Home
         </Link>
-        <Link href="/my-walls" className="hover:underline">
+        <Link
+          href="/my-walls"
+          className="rounded-md px-2 py-1 transition-colors hover:bg-secondary"
+        >
           My Walls
         </Link>
       </div>
