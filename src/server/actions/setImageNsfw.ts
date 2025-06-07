@@ -14,6 +14,27 @@ export async function setImageNsfw({ id, nsfw }: { id: number; nsfw: number }) {
       message: "Not authenticated",
     }
 
+  const ownerId = (
+    await db
+      .select({ ownerId: file.uploadedBy })
+      .from(file)
+      .where(eq(file.id, id))
+  )[0]
+
+  if (!ownerId) {
+    return {
+      status: "error" as const,
+      message: "Image not found",
+    }
+  }
+
+  if (ownerId.ownerId !== session.user.id) {
+    return {
+      status: "error" as const,
+      message: "You do not own this image",
+    }
+  }
+
   const changed = await db
     .update(file)
     .set({

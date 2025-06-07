@@ -28,12 +28,14 @@ export default async function Page({
     <div className="mx-auto flex flex-grow flex-col gap-4 p-4 md:w-4/5 md:justify-center md:p-0">
       <div className="flex items-center gap-2">
         <Back />
-        <Nsfw id={image.id} nsfw={image.nsfw} />
         {isOwner ? (
-          <div className="col-start-2 flex justify-end gap-2">
-            <RenameFile id={image.id} name={image.name} />
-            <DeleteFile id={image.id} />
-          </div>
+          <>
+            <Nsfw id={image.id} nsfw={image.nsfw} />
+            <div className="col-start-2 flex justify-end gap-2">
+              <RenameFile id={image.id} name={image.name} />
+              <DeleteFile id={image.id} />
+            </div>
+          </>
         ) : null}
       </div>
       <div className="text-center">{image.name}</div>
