@@ -11,12 +11,10 @@ export default async function Page() {
 
   return (
     <div>
-      <div className="mb-8 bg-neutral-200 py-8 text-center dark:bg-neutral-800">
-        <h1 className="font-clash text-6xl font-bold uppercase text-neutral-600">
-          My Walls
-        </h1>
-        <p className="font-clash text-neutral-500">
-          You have {uploads.length} walls
+      <div className="mb-8 bg-neutral-200 py-10 text-center dark:bg-neutral-800">
+        <h1 className="font-clash text-6xl font-bold uppercase">My Walls</h1>
+        <p className="font-clash text-xl">
+          You have {uploads.length} backgrounds
         </p>
       </div>
       <div className="mx-auto flex w-4/5 flex-col gap-8">

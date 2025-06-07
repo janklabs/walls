@@ -18,9 +18,9 @@ export default async function Page({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col items-center bg-neutral-200 py-16 dark:bg-neutral-800">
+      <div className="flex flex-col items-center bg-neutral-200 py-10 dark:bg-neutral-800">
         <h1 className="font-clash text-6xl font-bold uppercase">Walls</h1>
-        <h2 className="font-clash text-2xl">Backgrounds for your screens</h2>
+        <h2 className="font-clash text-xl">Backgrounds for your screens</h2>
       </div>
       <div className="mx-auto w-4/5">
         <Wall images={images} />
