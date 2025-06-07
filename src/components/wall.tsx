@@ -34,7 +34,7 @@ export function Wall({
       <div className="ml-auto flex items-center gap-2">
         <div className="text-sm font-semibold">NSFW</div>
         <div
-          className="relative h-8 w-16 cursor-pointer select-none overflow-hidden rounded-md bg-neutral-100 px-2 py-1 text-center text-xs uppercase"
+          className="relative h-8 w-16 cursor-pointer select-none overflow-hidden rounded-md bg-neutral-100 px-2 py-1 text-center text-xs uppercase dark:bg-neutral-900"
           onClick={() => {
             setNsfwFilter(nextNsfwFilter())
           }}

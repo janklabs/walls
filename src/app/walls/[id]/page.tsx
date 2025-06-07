@@ -73,7 +73,7 @@ export default async function Page({
           <p className="ml-auto hidden md:block">Uploaded by</p>
           <Link
             href={`/profile/${image.uploader.id}`}
-            className="flex items-center gap-2 rounded-lg bg-neutral-100 px-2 py-1"
+            className="flex items-center gap-2 rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-900"
           >
             <Image
               src={image.uploader.image ?? ""}

@@ -11,7 +11,7 @@ export default async function Page() {
 
   return (
     <div>
-      <div className="mb-8 bg-neutral-200 py-8 text-center">
+      <div className="mb-8 bg-neutral-200 py-8 text-center dark:bg-neutral-800">
         <h1 className="font-clash text-6xl font-bold uppercase text-neutral-600">
           My Walls
         </h1>

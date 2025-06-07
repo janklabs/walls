@@ -3,6 +3,7 @@ import { auth } from "@/server/auth"
 import Image from "next/image"
 import Link from "next/link"
 import { PiGear, PiGearDuotone } from "react-icons/pi"
+import { ThemeToggle } from "./theme-toggle"
 
 export async function Navbar() {
   const session = await auth()
@@ -17,6 +18,7 @@ export async function Navbar() {
         </Link>
       </div>
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <Link href="/settings">
           <Button variant="secondary" className="group">
             <div className="relative w-2">

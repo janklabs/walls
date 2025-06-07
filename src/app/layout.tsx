@@ -5,6 +5,7 @@ import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
 import { Navbar } from "./_components/navbar"
 import { Toaster } from "@/components/ui/sonner"
+import { Providers } from "./_components/providers"
 
 export const metadata: Metadata = {
   title: "Walls",
@@ -23,11 +24,14 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${GeistSans.variable} ${ClashDisplay.variable}`}
+      suppressHydrationWarning
     >
-      <body className="flex h-screen flex-col">
-        <Navbar />
-        {children}
-        <Toaster />
+      <body className="flex h-screen flex-col dark:bg-black">
+        <Providers>
+          <Navbar />
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   )
