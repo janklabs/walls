@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { setSelfAbsorbedMode } from "@/server/actions/toggle-self-absorbed"
 import type { _getSettings } from "@/server/settings"
+import { useTheme } from "next-themes"
 import { toast } from "sonner"
 
 export function Settings({
@@ -10,6 +11,7 @@ export function Settings({
 }: {
   settings: Awaited<ReturnType<typeof _getSettings>>
 }) {
+  const { theme, setTheme } = useTheme()
   return (
     <div className="mx-auto w-4/5">
       <div className="font-clash text-4xl font-bold">Settings</div>
@@ -30,6 +32,21 @@ export function Settings({
               } else {
                 toast.error(resp.message)
               }
+            }}
+          />
+        </div>
+      </Card>
+      <Card className="mt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <div className="font-semibold">Dark Mode</div>
+            <div className="text-sm text-neutral-400">{`You know what dark mode is.`}</div>
+          </div>
+          <Switch
+            checked={theme === "dark"}
+            onCheckedChange={(checked) => {
+              setTheme(checked ? "dark" : "light")
+              toast.success(`Theme changed to ${checked ? "Dark" : "Light"}`)
             }}
           />
         </div>
