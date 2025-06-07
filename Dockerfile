@@ -7,7 +7,7 @@ RUN bun install
 
 COPY . .
 
-RUN SKIP_ENV_VALIDATION=1 bun run build
+RUN bun run build
 
 EXPOSE 3000
 
