@@ -9,6 +9,7 @@ export default {
       fontFamily: {
         geist: ["var(--font-geist-sans)", ...fontFamily.sans],
         clash: ["var(--font-clash-display)"],
+        sans: ["var(--font-satoshi)", ...fontFamily.sans],
       },
       borderRadius: {
         lg: "var(--radius)",

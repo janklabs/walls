@@ -6,6 +6,7 @@ import { type Metadata } from "next"
 import { Navbar } from "./_components/navbar"
 import { Toaster } from "@/components/ui/sonner"
 import { Providers } from "./_components/providers"
+import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Walls",
@@ -17,13 +18,31 @@ const ClashDisplay = localFont({
   variable: "--font-clash-display",
 })
 
+const Satoshi = localFont({
+  src: [
+    {
+      path: "../../fonts/Satoshi-Variable.woff2",
+      style: "normal",
+    },
+    {
+      path: "../../fonts/Satoshi-VariableItalic.woff2",
+      style: "italic",
+    },
+  ],
+  variable: "--font-satoshi",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${ClashDisplay.variable}`}
+      className={cn(
+        GeistSans.variable,
+        ClashDisplay.variable,
+        Satoshi.variable,
+      )}
       suppressHydrationWarning
     >
       <body className="flex h-screen flex-col dark:bg-black">
