@@ -21,7 +21,7 @@ export default async function Page({
 
   return (
     <div className="mx-auto w-4/5">
-      <div className="mt-8 flex items-center justify-between rounded-xl border bg-neutral-200 p-4 shadow-xl">
+      <div className="mt-8 flex items-center justify-between rounded-xl border bg-neutral-200 p-4 shadow-xl dark:bg-neutral-800">
         <div className="flex items-center gap-4">
           <Avatar className="size-10">
             <AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
