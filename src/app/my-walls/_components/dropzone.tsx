@@ -83,7 +83,7 @@ export function Dropzone({ className }: { className?: string }) {
       )}
     >
       <input {...getInputProps()} />
-      <p className="text-2xl text-neutral-700 dark:text-neutral-300">
+      <p className="text-2xl text-neutral-600 dark:text-neutral-400">
         Upload some beautiful backgrounds
       </p>
       {uploadingFiles.total > 0 ? (
