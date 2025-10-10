@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm"
 import { db } from "."
 import { file, users } from "./schema"
-import { decode } from "base64-arraybuffer"
+import { toByteArray } from "base64-js"
 
 export async function getUploads(userId: string) {
   return await db
@@ -61,7 +61,7 @@ export async function getImage(name: string) {
       .where(eq(file.name, name))
       .limit(1)
   )[0]?.base64
-  return base64 ? decode(base64) : null
+  return base64 ? toByteArray(base64) : null
 }
 
 export async function getImageMd(id: number) {

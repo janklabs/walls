@@ -3,7 +3,7 @@
 import sharp from "sharp"
 import { auth } from "../auth"
 import { existsFileName, insertFile } from "../db/queries"
-import { encode } from "base64-arraybuffer"
+import { fromByteArray } from "base64-js"
 import { revalidatePath } from "next/cache"
 
 function name(basename: string, count: number) {
@@ -46,7 +46,7 @@ export async function uploadFile(file: File) {
     count++
   }
 
-  const base64 = encode(jpeg)
+  const base64 = fromByteArray(jpeg)
 
   await insertFile({
     userId: session.user.id,
