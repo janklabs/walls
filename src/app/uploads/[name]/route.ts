@@ -1,7 +1,7 @@
 import { getImage } from "@/server/db/queries"
 
 export async function GET(
-  request: Request,
+  _: Request,
   { params }: { params: Promise<{ name: string }> },
 ) {
   const image = await getImage((await params).name)
@@ -11,5 +11,5 @@ export async function GET(
 
   const headers = new Headers()
   headers.set("Content-Type", "image/jpeg")
-  return new Response(image, { headers })
+  return new Response(Buffer.from(image), { headers })
 }
