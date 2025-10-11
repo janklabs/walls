@@ -21,7 +21,7 @@ declare module "next-auth" {
     } & DefaultSession["user"]
   }
 
-  interface User {}
+  // interface User {}
 }
 
 /**
