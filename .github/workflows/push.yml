@@ -1,15 +1,41 @@
-name: deploy
+name: push on main branch
 on:
   push:
     branches:
       - main
 
-concurrency:
-  group: deploy
-  cancel-in-progress: false
-
 jobs:
+  test-docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t website .
+
+  test-formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run format:check
+
+  test-npm-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+
   build-push:
+    needs:
+      - test-docker-build
+      - test-formatting
+      - test-npm-build
     runs-on: ubuntu-latest
     environment: deployment
     steps:
