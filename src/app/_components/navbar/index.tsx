@@ -67,7 +67,7 @@ export async function Navbar() {
             </Button>
           </Link>
         ) : (
-          <Link href="/login">
+          <Link href="/signin">
             <Button variant="secondary">Log In</Button>
           </Link>
         )}
