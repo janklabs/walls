@@ -97,12 +97,8 @@
           "name": "walls_account_user_id_walls_user_id_fk",
           "tableFrom": "walls_account",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -110,10 +106,7 @@
       "compositePrimaryKeys": {
         "walls_account_provider_provider_account_id_pk": {
           "name": "walls_account_provider_provider_account_id_pk",
-          "columns": [
-            "provider",
-            "provider_account_id"
-          ]
+          "columns": ["provider", "provider_account_id"]
         }
       },
       "uniqueConstraints": {},
@@ -206,12 +199,8 @@
           "name": "walls_file_uploaded_by_walls_user_id_fk",
           "tableFrom": "walls_file",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "uploaded_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["uploaded_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -221,9 +210,7 @@
         "walls_file_name_unique": {
           "name": "walls_file_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -275,12 +262,8 @@
           "name": "walls_session_user_id_walls_user_id_fk",
           "tableFrom": "walls_session",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -315,12 +298,8 @@
           "name": "walls_settings_user_id_walls_user_id_fk",
           "tableFrom": "walls_settings",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -417,10 +396,7 @@
       "compositePrimaryKeys": {
         "walls_verification_token_identifier_token_pk": {
           "name": "walls_verification_token_identifier_token_pk",
-          "columns": [
-            "identifier",
-            "token"
-          ]
+          "columns": ["identifier", "token"]
         }
       },
       "uniqueConstraints": {},
