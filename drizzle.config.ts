@@ -7,6 +7,7 @@ export default {
   dialect: "postgresql",
   dbCredentials: {
     url: env.DATABASE_URL,
+    ssl: "require",
   },
   tablesFilter: ["walls_*"],
 } satisfies Config
