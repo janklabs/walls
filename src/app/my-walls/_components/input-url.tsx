@@ -6,6 +6,7 @@ import { clientOS } from "@/lib/client"
 import { uploadFileUsingUrl } from "@/server/actions/uploadFileUsingUrl"
 
 import { useState } from "react"
+import { CgSpinnerTwo } from "react-icons/cg"
 import { ImCommand, ImCtrl } from "react-icons/im"
 import { MdKeyboardReturn } from "react-icons/md"
 import { toast } from "sonner"
@@ -24,6 +25,7 @@ export function InputUrl() {
     try {
       const resp = await uploadFileUsingUrl(url)
       if (resp.status == "success") {
+        setUrl("")
         toast.success(resp.message)
       } else {
         throw new Error(resp.message ?? undefined)
@@ -60,6 +62,7 @@ export function InputUrl() {
         }}
       />
       <Button onClick={submit} disabled={disabled}>
+        {disabled ? <CgSpinnerTwo className="animate-spin" /> : null}
         Upload
         {os === "mac" || os === "windows" || os === "linux" ? (
           <div className="flex items-center gap-1 text-neutral-400">
