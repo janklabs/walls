@@ -29,6 +29,7 @@ export const users = createTable("user", {
     mode: "date",
     withTimezone: true,
   }).defaultNow(),
+  isAdmin: boolean("is_admin").notNull().default(false),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
