@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache"
 import { auth } from "../auth"
 import { existsFileName, updateFile } from "../db/queries"
+import { db } from "../db"
+import { file } from "../db/schema"
+import { eq } from "drizzle-orm"
 
 function name(basename: string, count: number) {
   return basename + (count > 1 ? `-${count.toString()}` : "") + ".jpeg"
@@ -21,6 +24,22 @@ export async function renameFile({
       status: "error" as const,
       message: "Not authenticated",
     }
+
+  const owners = await db
+    .select({
+      owner: file.uploadedBy,
+    })
+    .from(file)
+    .where(eq(file.id, id))
+    .limit(1)
+
+  if (!owners[0]) return { status: "error" as const, message: "File not found" }
+  if (!session.user.isAdmin && owners[0].owner !== session.user.id) {
+    return {
+      status: "error" as const,
+      message: "Not authorized",
+    }
+  }
 
   console.log("basename", basename)
   let count = 1

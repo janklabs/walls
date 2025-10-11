@@ -28,7 +28,7 @@ export async function setImageNsfw({ id, nsfw }: { id: number; nsfw: number }) {
     }
   }
 
-  if (ownerId.ownerId !== session.user.id) {
+  if (!session.user.isAdmin && ownerId.ownerId !== session.user.id) {
     return {
       status: "error" as const,
       message: "You do not own this image",
