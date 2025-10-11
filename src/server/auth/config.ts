@@ -24,15 +24,17 @@ declare module "next-auth" {
   // interface User {}
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
-export const authConfig = {
+export const authConfig: NextAuthConfig = {
   trustHost: true,
+  pages: {
+    signIn: "/signin",
+    signOut: "/signout",
+  },
   providers: [
-    DiscordProvider,
+    DiscordProvider({
+      clientId: env.AUTH_DISCORD_ID,
+      clientSecret: env.AUTH_DISCORD_SECRET,
+    }),
     GoogleProvider({
       clientId: env.AUTH_GOOGLE_ID,
       clientSecret: env.AUTH_GOOGLE_SECRET,
@@ -44,7 +46,10 @@ export const authConfig = {
         },
       },
     }),
-    GithubProvider,
+    GithubProvider({
+      clientId: env.AUTH_GITHUB_ID,
+      clientSecret: env.AUTH_GITHUB_SECRET,
+    }),
   ],
   adapter: DrizzleAdapter(db, {
     usersTable: users,
@@ -62,4 +67,4 @@ export const authConfig = {
       },
     }),
   },
-} satisfies NextAuthConfig
+}

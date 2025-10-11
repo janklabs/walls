@@ -10,7 +10,7 @@ const auth = cache(uncachedAuth)
 
 async function ensureAuth() {
   const session = await auth()
-  if (!session) redirect("/login")
+  if (!session) redirect("/signin")
   return session
 }
 

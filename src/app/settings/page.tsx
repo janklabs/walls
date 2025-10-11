@@ -7,7 +7,7 @@ import { redirect } from "next/navigation"
 
 export default async function Page() {
   const user = (await auth())?.user
-  if (!user) redirect("/login")
+  if (!user) redirect("/signin")
 
   const settings = await _getSettings(user.id)
 
