@@ -9,9 +9,7 @@ export function SignOutButton() {
     <Button
       variant="destructive"
       className="w-40"
-      onClick={() => {
-        signOut()
-      }}
+      onClick={async () => await signOut()}
     >
       Sign out
     </Button>
