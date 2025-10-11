@@ -1,11 +1,12 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
 import { auth } from "../auth"
-import { existsFileName, updateFile } from "../db/queries"
 import { db } from "../db"
+import { existsFileName, updateFile } from "../db/queries"
 import { file } from "../db/schema"
+
 import { eq } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
 
 function name(basename: string, count: number) {
   return basename + (count > 1 ? `-${count.toString()}` : "") + ".jpeg"

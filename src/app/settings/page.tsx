@@ -1,7 +1,9 @@
 import { auth } from "@/server/auth"
 import { _getSettings } from "@/server/settings"
-import { redirect } from "next/navigation"
+
 import { Settings } from "./client"
+
+import { redirect } from "next/navigation"
 
 export default async function Page() {
   const user = (await auth())?.user

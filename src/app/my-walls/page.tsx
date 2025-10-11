@@ -1,8 +1,9 @@
-import { ensureAuth } from "@/server/auth"
-import { Dropzone } from "./_components/dropzone"
-import { getUploads } from "@/server/db/queries"
-import { InputUrl } from "./_components/input-url"
 import { Wall } from "@/components/wall"
+import { ensureAuth } from "@/server/auth"
+import { getUploads } from "@/server/db/queries"
+
+import { Dropzone } from "./_components/dropzone"
+import { InputUrl } from "./_components/input-url"
 
 export default async function Page() {
   const session = await ensureAuth()

@@ -1,10 +1,11 @@
 "use server"
 
-import { eq } from "drizzle-orm"
 import { auth } from "../auth"
 import { db } from "../db"
 import { settings } from "../db/schema"
 import { _getSettings } from "../settings"
+
+import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
 export async function setSelfAbsorbedMode(

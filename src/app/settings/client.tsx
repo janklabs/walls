@@ -1,8 +1,10 @@
 "use client"
+
 import { Card } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { setSelfAbsorbedMode } from "@/server/actions/toggle-self-absorbed"
 import type { _getSettings } from "@/server/settings"
+
 import { useTheme } from "next-themes"
 import { toast } from "sonner"
 

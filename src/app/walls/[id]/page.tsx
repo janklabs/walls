@@ -1,15 +1,17 @@
 import { Back } from "@/components/back"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { auth } from "@/server/auth"
 import { getImageMd } from "@/server/db/queries"
-import Image from "next/image"
-import { notFound } from "next/navigation"
+
 import { DeleteFile } from "./_components/delete-file"
-import prettyBytes from "pretty-bytes"
-import { Badge } from "@/components/ui/badge"
-import { RenameFile } from "./_components/rename-file"
 import { Nsfw } from "./_components/nsfw"
+import { RenameFile } from "./_components/rename-file"
+
+import Image from "next/image"
 import Link from "next/link"
+import { notFound } from "next/navigation"
+import prettyBytes from "pretty-bytes"
 
 export default async function Page({
   params,
