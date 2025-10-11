@@ -23,7 +23,7 @@ export async function deleteFile(id: number) {
     .limit(1)
 
   if (!owners[0]) return { status: "error" as const, message: "File not found" }
-  if (owners[0].owner !== session.user.id) {
+  if (!session.user.isAdmin && owners[0].owner !== session.user.id) {
     return {
       status: "error" as const,
       message: "Not authorized",

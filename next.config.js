@@ -14,6 +14,11 @@ const config = {
         protocol: "https",
         pathname: "/avatars/**",
       },
+      {
+        hostname: "lh3.googleusercontent.com",
+        protocol: "https",
+        pathname: "/a/**",
+      },
     ],
   },
   experimental: {

@@ -24,6 +24,11 @@ export async function Navbar() {
         </Link>
       </div>
       <div className="flex items-center gap-2">
+        {session?.user.isAdmin ? (
+          <div className="rounded-full border border-red-100 bg-red-50 px-2 text-red-300 dark:border-red-900 dark:bg-red-950 dark:text-red-700">
+            admin mode
+          </div>
+        ) : null}
         <ThemeToggle />
         <Link href="/settings">
           <Button variant="secondary" className="group">
