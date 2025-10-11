@@ -29,18 +29,22 @@ export default async function Page({
   const isAdmin = !!session?.user.isAdmin
 
   return (
-    <div className="mx-auto flex flex-grow flex-col gap-4 p-4 md:w-4/5 md:justify-center md:p-0">
-      <div className="flex items-center gap-2">
-        <Back />
+    <div className="flex flex-grow flex-col gap-4 p-2 px-4 md:mx-auto md:w-[90%] md:justify-center md:p-0">
+      <div className="grid grid-cols-3 grid-rows-2 gap-2 md:flex">
+        <Back className="col-start-1 row-start-1 w-full md:mr-auto md:w-fit" />
         {isOwner || isAdmin ? (
           <>
-            <div className="grow" />
             <PublicVisibility
               id={image.id}
               publicVisibility={image.publicVisibility}
+              className="col-start-2 row-start-1 w-full md:w-fit"
             />
-            <Nsfw id={image.id} nsfw={image.nsfw} />
-            <div className="col-start-2 flex justify-end gap-2">
+            <Nsfw
+              id={image.id}
+              nsfw={image.nsfw}
+              className="col-start-3 row-start-1 w-full md:w-fit"
+            />
+            <div className="col-span-3 row-start-2 flex justify-end gap-2 *:grow">
               <RenameFile id={image.id} name={image.name} />
               <DeleteFile id={image.id} />
             </div>
@@ -74,7 +78,7 @@ export default async function Page({
             </Button>
           </a>
         </div>
-        <div className="row-start-1 flex items-center justify-end gap-4">
+        <div className="row-start-1 flex items-center justify-end gap-2 md:justify-center">
           <Badge>
             {image.width}x{image.height}
           </Badge>
