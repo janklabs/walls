@@ -2,7 +2,12 @@ import { Button } from "@/components/ui/button"
 import { auth } from "@/server/auth"
 import Image from "next/image"
 import Link from "next/link"
-import { PiGear, PiGearDuotone } from "react-icons/pi"
+import {
+  PiGear,
+  PiGearDuotone,
+  PiGithubLogo,
+  PiGithubLogoDuotone,
+} from "react-icons/pi"
 import { ThemeToggle } from "./theme-toggle"
 
 export async function Navbar() {
@@ -29,6 +34,14 @@ export async function Navbar() {
             admin mode
           </div>
         ) : null}
+        <Link href="https://github.com/guneet-xyz/walls" target="_blank">
+          <Button variant="secondary" className="group">
+            <div className="relative w-2 *:scale-105">
+              <PiGithubLogo className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-100 transition-opacity group-hover:opacity-0" />
+              <PiGithubLogoDuotone className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100" />
+            </div>
+          </Button>
+        </Link>
         <ThemeToggle />
         <Link href="/settings">
           <Button variant="secondary" className="group">
