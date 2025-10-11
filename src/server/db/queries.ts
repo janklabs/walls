@@ -75,6 +75,7 @@ export async function getImageMd(id: number) {
       height: file.height,
       width: file.width,
       nsfw: file.nsfw,
+      publicVisibility: file.publicVisibility,
     })
     .from(file)
     .where(eq(file.id, id))
@@ -89,6 +90,7 @@ export async function getImageMd(id: number) {
   const file_height = _file_info[0].height
   const file_width = _file_info[0].width
   const file_nsfw = _file_info[0].nsfw
+  const file_publicVisibility = _file_info[0].publicVisibility
 
   const uploader = (
     await db
@@ -110,6 +112,7 @@ export async function getImageMd(id: number) {
     height: file_height,
     nsfw: file_nsfw,
     uploader: uploader,
+    publicVisibility: file_publicVisibility,
   }
 }
 
@@ -121,6 +124,7 @@ export async function getHomepageImages() {
       nsfw: file.nsfw,
     })
     .from(file)
+    .where(eq(file.publicVisibility, true))
     .orderBy(desc(file.uploadedAt))
 }
 
