@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
-import { toast } from "sonner"
+import { clientOS } from "@/lib/client"
 import { uploadFileUsingUrl } from "@/server/actions/uploadFileUsingUrl"
+
+import { useState } from "react"
 import { ImCommand, ImCtrl } from "react-icons/im"
 import { MdKeyboardReturn } from "react-icons/md"
-import { clientOS } from "@/lib/client"
+import { toast } from "sonner"
 
 export function InputUrl() {
   const [url, setUrl] = useState("")

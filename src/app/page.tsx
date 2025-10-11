@@ -1,6 +1,7 @@
 import { Wall } from "@/components/wall"
 import { getHomepageImages } from "@/server/db/queries"
 import { _getRedirectToMyWallCurrentUser } from "@/server/settings"
+
 import { redirect } from "next/navigation"
 
 export default async function Page({

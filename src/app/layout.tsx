@@ -1,12 +1,13 @@
+import { Toaster } from "@/components/ui/sonner"
+import { cn } from "@/lib/utils"
 import "@/styles/globals.css"
-import localFont from "next/font/local"
+
+import { Navbar } from "./_components/navbar"
+import { Providers } from "./_components/providers"
 
 import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
-import { Navbar } from "./_components/navbar"
-import { Toaster } from "@/components/ui/sonner"
-import { Providers } from "./_components/providers"
-import { cn } from "@/lib/utils"
+import localFont from "next/font/local"
 
 export const metadata: Metadata = {
   title: "Walls",

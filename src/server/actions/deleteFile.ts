@@ -1,9 +1,10 @@
 "use server"
 
-import { eq } from "drizzle-orm"
 import { auth } from "../auth"
 import { db } from "../db"
 import { file } from "../db/schema"
+
+import { eq } from "drizzle-orm"
 
 export async function deleteFile(id: number) {
   const session = await auth()

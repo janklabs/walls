@@ -1,8 +1,8 @@
-import NextAuth from "next-auth"
-import { cache } from "react"
-
 import { authConfig } from "./config"
+
+import NextAuth from "next-auth"
 import { redirect } from "next/navigation"
+import { cache } from "react"
 
 const { auth: uncachedAuth, handlers, signIn, signOut } = NextAuth(authConfig)
 

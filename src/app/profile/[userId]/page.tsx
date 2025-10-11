@@ -3,9 +3,10 @@ import { Wall } from "@/components/wall"
 import { db } from "@/server/db"
 import { getUploads } from "@/server/db/queries"
 import { users } from "@/server/db/schema"
+
 import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
 import moment from "moment"
+import { notFound } from "next/navigation"
 
 export default async function Page({
   params,
