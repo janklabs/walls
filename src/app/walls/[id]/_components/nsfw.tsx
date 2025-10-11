@@ -6,10 +6,23 @@ import { setImageNsfw } from "@/server/actions/setImageNsfw"
 import { useState } from "react"
 import { toast } from "sonner"
 
-export function Nsfw({ id, nsfw }: { id: number; nsfw: number }) {
+export function Nsfw({
+  id,
+  nsfw,
+  className,
+}: {
+  id: number
+  nsfw: number
+  className?: string
+}) {
   const [submitting, setSubmitting] = useState(false)
   return (
-    <div className="ml-auto flex items-center gap-2 rounded-md bg-neutral-100 px-2 py-1.5 dark:bg-neutral-900">
+    <div
+      className={cn(
+        "flex items-center justify-around gap-2 rounded-md bg-neutral-100 px-2 py-1.5 dark:bg-neutral-900",
+        className,
+      )}
+    >
       <div className="text-sm font-semibold">NSFW</div>
       <div
         className="relative h-6 w-16 cursor-pointer select-none overflow-hidden rounded-md bg-neutral-200 px-2 py-1 text-center text-xs uppercase transition-colors hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700"
