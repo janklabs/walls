@@ -6,6 +6,7 @@ import { getImageMd } from "@/server/db/queries"
 
 import { DeleteFile } from "./_components/delete-file"
 import { Nsfw } from "./_components/nsfw"
+import { PublicVisibility } from "./_components/public-visibility"
 import { RenameFile } from "./_components/rename-file"
 
 import Image from "next/image"
@@ -33,6 +34,11 @@ export default async function Page({
         <Back />
         {isOwner || isAdmin ? (
           <>
+            <div className="grow" />
+            <PublicVisibility
+              id={image.id}
+              publicVisibility={image.publicVisibility}
+            />
             <Nsfw id={image.id} nsfw={image.nsfw} />
             <div className="col-start-2 flex justify-end gap-2">
               <RenameFile id={image.id} name={image.name} />

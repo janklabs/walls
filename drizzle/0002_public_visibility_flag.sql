@@ -1,0 +1,1 @@
+ALTER TABLE "walls_file" ADD COLUMN "public_visibility" boolean DEFAULT false NOT NULL;

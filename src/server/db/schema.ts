@@ -115,6 +115,7 @@ export const file = createTable("file", {
   width: integer("width").notNull(),
   size: integer("size").notNull(),
   nsfw: integer("nsfw").notNull().default(0), // 0, 1, or 2
+  publicVisibility: boolean("public_visibility").notNull().default(false),
 })
 
 export const settings = createTable("settings", {
