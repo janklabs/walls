@@ -123,4 +123,7 @@ export const settings = createTable("settings", {
     .primaryKey()
     .references(() => users.id),
   redirectToMyWall: boolean("redirect_to_my_wall").notNull().default(false),
+  defaultPublicVisibility: boolean("default_public_visibility")
+    .notNull()
+    .default(false),
 })

@@ -20,7 +20,13 @@ export async function _getSettings(userId: string) {
   }
 
   const user_settings = (
-    await db.select().from(settings).where(eq(settings.userId, userId))
+    await db
+      .select({
+        redirectToMyWall: settings.redirectToMyWall,
+        defaultPublicVisibility: settings.defaultPublicVisibility,
+      })
+      .from(settings)
+      .where(eq(settings.userId, userId))
   )[0]
 
   if (!user_settings) throw new Error("User settings not found")

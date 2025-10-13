@@ -1,0 +1,1 @@
+ALTER TABLE "walls_settings" ADD COLUMN "default_public_visibility" boolean DEFAULT false NOT NULL;
