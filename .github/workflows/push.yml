@@ -37,41 +37,19 @@ jobs:
       - test-formatting
       - test-npm-build
     runs-on: ubuntu-latest
-    environment: deployment
+    environment: production
     steps:
-      - name: tailscale
-        uses: tailscale/github-action@v3
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: build image
+        run: docker build -t ${{ secrets.DOCKER_REGISTRY }}/walls/website:latest .
+      - name: azure login
+        uses: azure/login@v2
         with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-      - name: docker login
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ secrets.DOCKER_REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: actions/checkout@v4
-      - run: docker build -t ${{ secrets.DOCKER_REGISTRY }}/walls/website:latest .
-      - run: docker push ${{ secrets.DOCKER_REGISTRY }}/walls/website:latest
-
-  deploy:
-    runs-on: ubuntu-latest
-    environment: deployment
-    needs:
-      - build-push
-    steps:
-      - name: tailscale
-        uses: tailscale/github-action@v3
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-      - name: Make .ssh folder
-        run: mkdir -p ~/.ssh
-      - name: Write SSH private key
-        run: echo '${{ secrets.SSH_PRIVATE_KEY }}' > ~/.ssh/id_rsa
-      - name: Set permissions for SSH private key
-        run: chmod 400 ~/.ssh/id_rsa
-      - name: SSH into server
-        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '${{ secrets.SSH_COMMAND }}'
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: acr login
+        run: az acr login --name ${{ secrets.AZURE_REGISTRY_NAME }}
+      - name: push image
+        run: docker push ${{ secrets.DOCKER_REGISTRY }}/walls/website:latest
