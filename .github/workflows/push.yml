@@ -4,6 +4,9 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+
 jobs:
   test-docker-build:
     runs-on: ubuntu-latest
