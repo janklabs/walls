@@ -9,9 +9,7 @@ import {
 
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { type DefaultSession, type NextAuthConfig } from "next-auth"
-import DiscordProvider from "next-auth/providers/discord"
-import GithubProvider from "next-auth/providers/github"
-import GoogleProvider from "next-auth/providers/google"
+import EmailProvider from "next-auth/providers/nodemailer"
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -29,26 +27,19 @@ export const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/signin",
     signOut: "/signout",
+    verifyRequest: "/auth/verify-request",
   },
   providers: [
-    DiscordProvider({
-      clientId: env.AUTH_DISCORD_ID,
-      clientSecret: env.AUTH_DISCORD_SECRET,
-    }),
-    GoogleProvider({
-      clientId: env.AUTH_GOOGLE_ID,
-      clientSecret: env.AUTH_GOOGLE_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
+    EmailProvider({
+      server: {
+        host: env.SMTP_HOST,
+        port: Number(env.SMTP_PORT),
+        auth: {
+          user: env.SMTP_USERNAME,
+          pass: env.SMTP_PASSWORD,
         },
       },
-    }),
-    GithubProvider({
-      clientId: env.AUTH_GITHUB_ID,
-      clientSecret: env.AUTH_GITHUB_SECRET,
+      from: env.SMTP_MAIL_FROM,
     }),
   ],
   adapter: DrizzleAdapter(db, {
