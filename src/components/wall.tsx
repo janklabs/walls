@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 
 export function Wall({
   images,
@@ -19,17 +19,15 @@ export function Wall({
     return "none"
   }
 
-  const [filteredImages, setFilteredImages] = useState<typeof images>([])
-
-  useEffect(() => {
-    setFilteredImages(
+  const filteredImages = useMemo(
+    () =>
       images.filter((image) => {
         if (nsfwFilter === "none") return image.nsfw === 0
         if (nsfwFilter === "mild") return image.nsfw !== 2
         return true
       }),
-    )
-  }, [images, nsfwFilter])
+    [images, nsfwFilter],
+  )
 
   return (
     <div className="flex flex-col gap-4">
