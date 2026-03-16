@@ -22,7 +22,9 @@
   },
   "overrides": {
     "esbuild": "^0.25.10",
-    "esm-loader": "tsx@^4.20.4"
+    "@auth/core": {
+      "nodemailer": "^7.0.7"
+    }
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.2",
