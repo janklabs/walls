@@ -19,4 +19,5 @@ COPY --from=build /src/public /app/public
 
 EXPOSE 3000
 WORKDIR /app
+ENV HOSTNAME=0.0.0.0
 ENTRYPOINT [ "node", "server.js" ]

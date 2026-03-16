@@ -25,7 +25,7 @@ export default async function Page({
   }
 
   const session = await auth()
-  const isOwner = session && session.user.id == image.uploader.id
+  const isOwner = session?.user.id == image.uploader.id
   const isAdmin = !!session?.user.isAdmin
 
   return (
