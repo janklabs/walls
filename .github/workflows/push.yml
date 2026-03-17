@@ -83,6 +83,8 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            BUILD_VERSION=${{ inputs.tag }}
           tags: ${{ vars.DOCKER_IMAGE }}:${{ inputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

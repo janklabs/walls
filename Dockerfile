@@ -2,6 +2,7 @@ FROM node:22-alpine AS build
 
 ARG BUILD_VERSION
 ENV BUILD_VERSION=${BUILD_VERSION}
+ENV NEXT_PUBLIC_APP_VERSION=${BUILD_VERSION}
 
 COPY package.json /src/package.json
 COPY package-lock.json /src/package-lock.json

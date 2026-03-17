@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { env } from "@/env"
 import { auth } from "@/server/auth"
 
 import { ThemeToggle } from "./theme-toggle"
@@ -42,6 +43,9 @@ export async function Navbar() {
               <PiGithubLogo className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-100 transition-opacity group-hover:opacity-0" />
               <PiGithubLogoDuotone className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100" />
             </div>
+            <span className="text-xs text-muted-foreground">
+              v{env.NEXT_PUBLIC_APP_VERSION}
+            </span>
           </Button>
         </Link>
         <ThemeToggle />
