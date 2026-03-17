@@ -14,7 +14,6 @@ on:
 jobs:
   format-check:
     name: Prettier Format Check
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,6 +69,7 @@ jobs:
 
   docker-force-push:
     name: Docker Force Push
+    needs: format-check
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
