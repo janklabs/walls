@@ -8,8 +8,10 @@ COPY package-lock.json /src/package-lock.json
 
 WORKDIR /src
 RUN npm ci
+
 COPY . /src
-RUN SKIP_ENV_VALIDATION=1 npm run build
+
+RUN npm run build
 
 FROM node:22-alpine
 
