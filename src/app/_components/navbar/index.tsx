@@ -39,7 +39,7 @@ export async function Navbar() {
         ) : null}
         <Link href="https://github.com/guneet-xyz/walls" target="_blank">
           <Button variant="secondary" className="group">
-            <div className="relative w-2 *:scale-105">
+            <div className="relative w-4 *:scale-105">
               <PiGithubLogo className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-100 transition-opacity group-hover:opacity-0" />
               <PiGithubLogoDuotone className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100" />
             </div>
