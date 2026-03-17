@@ -39,11 +39,6 @@ jobs:
       version: ${{ steps.semantic.outputs.new_release_version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
       - id: semantic
         uses: cycjimmy/semantic-release-action@v4
         env:
@@ -109,4 +104,4 @@ jobs:
       - name: Set permissions for SSH private key
         run: chmod 400 ~/.ssh/id_rsa
       - name: SSH into server
-        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ vars.GILGAMESH_SSH_USER }}@${{ vars.GILGAMESH_SSH_HOST }} ${{ vars.GILGAMESH_SSH_COMMAND }}
+        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GILGAMESH_SSH_USER }}@${{ secrets.GILGAMESH_SSH_HOST }} ${{ vars.GILGAMESH_SSH_COMMAND }}
