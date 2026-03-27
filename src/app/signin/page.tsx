@@ -14,7 +14,9 @@ export default async function Page({
   const session = await auth()
   if (session) redirect("/")
 
-  const error = (await searchParams).error as string | undefined
+  const params = await searchParams
+  const error = params.error as string | undefined
+  const email = params.email as string | undefined
 
   return (
     <div className="flex grow items-center justify-center">
@@ -28,7 +30,7 @@ export default async function Page({
           </div>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
-          <SignInError error={error} />
+          <SignInError error={error} email={email} />
           <p className="text-center text-sm text-muted-foreground">
             Enter your email to receive a sign-in link.
           </p>

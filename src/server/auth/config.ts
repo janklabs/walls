@@ -91,7 +91,7 @@ export const authConfig: NextAuthConfig = {
 
         const invited = await isEmailInvited(email)
         if (!invited) {
-          return "/signin?error=not-invited"
+          return `/signin?error=not-invited&email=${encodeURIComponent(email)}`
         }
       }
 
