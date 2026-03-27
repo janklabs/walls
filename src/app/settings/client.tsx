@@ -44,7 +44,6 @@ export function Settings({
   currentUserId: string
   adminData: AdminData | null
 }) {
-  const { theme, setTheme } = useTheme()
   return (
     <div className="mx-auto w-4/5">
       <div className="font-clash text-4xl font-bold">Settings</div>
@@ -69,21 +68,7 @@ export function Settings({
           />
         </div>
       </Card>
-      <Card className="mt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <div className="font-semibold">Dark Mode</div>
-            <div className="text-sm text-neutral-400">{`You know what dark mode is.`}</div>
-          </div>
-          <Switch
-            checked={theme === "dark"}
-            onCheckedChange={(checked) => {
-              setTheme(checked ? "dark" : "light")
-              toast.success(`Theme changed to ${checked ? "Dark" : "Light"}`)
-            }}
-          />
-        </div>
-      </Card>
+      <DarkModeToggle />
 
       {isAdmin && adminData && (
         <AdminSettings adminData={adminData} currentUserId={currentUserId} />
