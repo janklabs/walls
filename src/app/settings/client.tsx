@@ -7,13 +7,19 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { addInvite } from "@/server/actions/admin/add-invite"
+import { approveRequest } from "@/server/actions/admin/approve-request"
+import { denyRequest } from "@/server/actions/admin/deny-request"
 import { removeInvite } from "@/server/actions/admin/remove-invite"
 import { toggleGuestViewing } from "@/server/actions/admin/toggle-guest-viewing"
 import { toggleInviteOnly } from "@/server/actions/admin/toggle-invite-only"
 import { toggleUserAdmin } from "@/server/actions/admin/toggle-user-admin"
 import { toggleUserBlocked } from "@/server/actions/admin/toggle-user-blocked"
 import { setSelfAbsorbedMode } from "@/server/actions/toggle-self-absorbed"
-import type { getAllUsers, getInviteList } from "@/server/db/queries"
+import type {
+  getAllUsers,
+  getInviteList,
+  getInviteRequests,
+} from "@/server/db/queries"
 import type { _getSettings } from "@/server/settings"
 
 import moment from "moment"
@@ -29,6 +35,7 @@ const DarkModeToggle = dynamic(
 type AdminData = {
   users: Awaited<ReturnType<typeof getAllUsers>>
   invites: Awaited<ReturnType<typeof getInviteList>>
+  inviteRequests: Awaited<ReturnType<typeof getInviteRequests>>
   inviteOnly: boolean
   guestViewing: boolean
 }
@@ -141,6 +148,17 @@ function AdminSettings({
       </div>
       <InviteSection invites={adminData.invites} />
 
+      {/* Access Requests */}
+      <div className="mt-8 text-lg font-semibold text-neutral-500">
+        Access Requests
+        {adminData.inviteRequests.length > 0 && (
+          <Badge variant="destructive" className="ml-2">
+            {adminData.inviteRequests.length}
+          </Badge>
+        )}
+      </div>
+      <AccessRequests requests={adminData.inviteRequests} />
+
       {/* User Management */}
       <div className="mt-8 text-lg font-semibold text-neutral-500">Users</div>
       <UserManagement users={adminData.users} currentUserId={currentUserId} />
@@ -227,6 +245,72 @@ function InviteSection({ invites }: { invites: AdminData["invites"] }) {
         </Card>
       )}
     </>
+  )
+}
+
+function AccessRequests({
+  requests,
+}: {
+  requests: AdminData["inviteRequests"]
+}) {
+  if (requests.length === 0) {
+    return (
+      <Card className="mt-2">
+        <div className="text-center text-sm text-neutral-400">
+          No pending access requests
+        </div>
+      </Card>
+    )
+  }
+
+  return (
+    <Card className="mt-2">
+      <div className="flex flex-col divide-y divide-neutral-200 dark:divide-neutral-800">
+        {requests.map((req) => (
+          <div
+            key={req.id}
+            className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+          >
+            <div className="flex flex-col">
+              <div className="text-sm font-medium">{req.email}</div>
+              <div className="text-xs text-neutral-400">
+                Requested {moment(req.requestedAt).fromNow()}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={async () => {
+                  const resp = await approveRequest(req.id)
+                  if (resp.success) {
+                    toast.success(resp.message)
+                  } else {
+                    toast.error(resp.message)
+                  }
+                }}
+              >
+                Approve
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-500 hover:text-red-600"
+                onClick={async () => {
+                  const resp = await denyRequest(req.id)
+                  if (resp.success) {
+                    toast.success(resp.message)
+                  } else {
+                    toast.error(resp.message)
+                  }
+                }}
+              >
+                Deny
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
   )
 }
 

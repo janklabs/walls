@@ -143,3 +143,11 @@ export const appSettings = createTable("app_settings", {
   key: varchar("key", { length: 255 }).primaryKey(),
   value: varchar("value", { length: 255 }).notNull(),
 })
+
+export const inviteRequest = createTable("invite_request", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  requestedAt: timestamp("requested_at", { mode: "date" })
+    .notNull()
+    .defaultNow(),
+})

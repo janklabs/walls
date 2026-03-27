@@ -1,5 +1,12 @@
 import { db } from "."
-import { appSettings, file, invite, sessions, users } from "./schema"
+import {
+  appSettings,
+  file,
+  invite,
+  inviteRequest,
+  sessions,
+  users,
+} from "./schema"
 
 import { toByteArray } from "base64-js"
 import { count, desc, eq } from "drizzle-orm"
@@ -266,4 +273,40 @@ export async function updateLastSeen(userId: string) {
     .update(users)
     .set({ lastSeen: new Date() })
     .where(eq(users.id, userId))
+}
+
+// ── Invite Requests ─────────────────────────────────────────────────
+
+export async function getInviteRequests() {
+  return await db
+    .select({
+      id: inviteRequest.id,
+      email: inviteRequest.email,
+      requestedAt: inviteRequest.requestedAt,
+    })
+    .from(inviteRequest)
+    .orderBy(desc(inviteRequest.requestedAt))
+}
+
+export async function hasExistingRequest(email: string): Promise<boolean> {
+  const row = await db
+    .select({ id: inviteRequest.id })
+    .from(inviteRequest)
+    .where(eq(inviteRequest.email, email.toLowerCase()))
+    .limit(1)
+  return row.length > 0
+}
+
+export async function createInviteRequest(email: string) {
+  await db.insert(inviteRequest).values({ email: email.toLowerCase() })
+}
+
+export async function deleteInviteRequest(id: number) {
+  const row = await db
+    .select({ email: inviteRequest.email })
+    .from(inviteRequest)
+    .where(eq(inviteRequest.id, id))
+    .limit(1)
+  await db.delete(inviteRequest).where(eq(inviteRequest.id, id))
+  return row[0]?.email ?? null
 }
