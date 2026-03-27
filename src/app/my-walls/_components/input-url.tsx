@@ -1,15 +1,17 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { clientOS } from "@/lib/client"
 import { uploadFileUsingUrl } from "@/server/actions/uploadFileUsingUrl"
 
+import dynamic from "next/dynamic"
 import { useState } from "react"
-import { CgSpinnerTwo } from "react-icons/cg"
-import { ImCommand, ImCtrl } from "react-icons/im"
-import { MdKeyboardReturn } from "react-icons/md"
 import { toast } from "sonner"
+
+const UploadButton = dynamic(
+  () => import("./upload-button").then((mod) => mod.UploadButton),
+  { ssr: false },
+)
 
 export function InputUrl() {
   const [url, setUrl] = useState("")
@@ -61,16 +63,7 @@ export function InputUrl() {
           }
         }}
       />
-      <Button onClick={submit} disabled={disabled}>
-        {disabled ? <CgSpinnerTwo className="animate-spin" /> : null}
-        Upload
-        {os === "mac" || os === "windows" || os === "linux" ? (
-          <div className="flex items-center gap-1 text-neutral-400">
-            {os === "mac" ? <ImCommand /> : <ImCtrl />}
-            <MdKeyboardReturn />
-          </div>
-        ) : null}
-      </Button>
+      <UploadButton onClick={submit} disabled={disabled} />
     </div>
   )
 }
