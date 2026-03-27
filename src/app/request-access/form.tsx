@@ -36,9 +36,8 @@ export function RequestAccessForm({
     return (
       <div className="flex w-72 flex-col gap-3">
         <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-center text-sm text-green-600 dark:border-green-900 dark:bg-green-950 dark:text-green-400">
-          {alreadyRequested
-            ? "An access request for this email has already been submitted. An administrator will review it."
-            : "Your access request has been submitted. An administrator will review it."}
+          An access request for this email has been submitted. An administrator
+          will review it.
         </div>
         <Link href="/signin">
           <Button variant="secondary" className="w-full">
