@@ -1,5 +1,6 @@
 import { Wall } from "@/components/wall"
 import { getHomepageImages } from "@/server/db/queries"
+import { ensureGuestAccessOrAuth } from "@/server/guest-access"
 import { _getRedirectToMyWallCurrentUser } from "@/server/settings"
 
 import { redirect } from "next/navigation"
@@ -9,6 +10,8 @@ export default async function Page({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
+  await ensureGuestAccessOrAuth()
+
   const images = await getHomepageImages()
   const redirectToMyWall = await _getRedirectToMyWallCurrentUser()
   const noRedirect = (await searchParams).redirect === "false"

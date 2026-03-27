@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { auth } from "@/server/auth"
 import { getImageMd } from "@/server/db/queries"
+import { ensureGuestAccessOrAuth } from "@/server/guest-access"
 
 import { DeleteFile } from "./_components/delete-file"
 import { Nsfw } from "./_components/nsfw"
@@ -19,6 +20,8 @@ export default async function Page({
 }: {
   params: Promise<{ id: string }>
 }) {
+  await ensureGuestAccessOrAuth()
+
   const image = await getImageMd(parseInt((await params).id))
   if (!image) {
     notFound()

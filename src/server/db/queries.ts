@@ -1,8 +1,8 @@
 import { db } from "."
-import { file, users } from "./schema"
+import { appSettings, file, invite, sessions, users } from "./schema"
 
 import { toByteArray } from "base64-js"
-import { desc, eq } from "drizzle-orm"
+import { count, desc, eq } from "drizzle-orm"
 
 export async function getUploads(userId: string) {
   return await db
@@ -135,4 +135,127 @@ export async function updateFile({ id, name }: { id: number; name: string }) {
       name,
     })
     .where(eq(file.id, id))
+}
+
+// ── Admin / App Settings ────────────────────────────────────────────
+
+export async function getAppSetting(key: string): Promise<string | null> {
+  const row = await db
+    .select({ value: appSettings.value })
+    .from(appSettings)
+    .where(eq(appSettings.key, key))
+    .limit(1)
+  return row[0]?.value ?? null
+}
+
+export async function setAppSetting(key: string, value: string): Promise<void> {
+  await db
+    .insert(appSettings)
+    .values({ key, value })
+    .onConflictDoUpdate({ target: appSettings.key, set: { value } })
+}
+
+export async function isInviteOnly(): Promise<boolean> {
+  return (await getAppSetting("invite_only")) === "true"
+}
+
+export async function isGuestViewingAllowed(): Promise<boolean> {
+  const value = await getAppSetting("allow_guest_viewing")
+  // Default to true if the setting hasn't been configured yet
+  return value !== "false"
+}
+
+// ── Invite List ─────────────────────────────────────────────────────
+
+export async function getInviteList() {
+  return await db
+    .select({
+      id: invite.id,
+      email: invite.email,
+      invitedBy: invite.invitedBy,
+      invitedAt: invite.invitedAt,
+      inviterName: users.name,
+    })
+    .from(invite)
+    .leftJoin(users, eq(invite.invitedBy, users.id))
+    .orderBy(desc(invite.invitedAt))
+}
+
+export async function isEmailInvited(email: string): Promise<boolean> {
+  const row = await db
+    .select({ id: invite.id })
+    .from(invite)
+    .where(eq(invite.email, email.toLowerCase()))
+    .limit(1)
+  return row.length > 0
+}
+
+export async function addInviteEmail(email: string, invitedBy: string) {
+  await db.insert(invite).values({
+    email: email.toLowerCase(),
+    invitedBy,
+  })
+}
+
+export async function removeInviteById(id: number) {
+  await db.delete(invite).where(eq(invite.id, id))
+}
+
+export async function deleteInviteByEmail(email: string) {
+  await db.delete(invite).where(eq(invite.email, email.toLowerCase()))
+}
+
+// ── User Management ─────────────────────────────────────────────────
+
+export async function getAllUsers() {
+  const userRows = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      image: users.image,
+      joinedAt: users.joinedAt,
+      isAdmin: users.isAdmin,
+      blocked: users.blocked,
+    })
+    .from(users)
+    .orderBy(desc(users.joinedAt))
+
+  // Get file counts per user
+  const fileCounts = await db
+    .select({
+      uploadedBy: file.uploadedBy,
+      count: count(),
+    })
+    .from(file)
+    .groupBy(file.uploadedBy)
+
+  const countMap = new Map(fileCounts.map((fc) => [fc.uploadedBy, fc.count]))
+
+  return userRows.map((u) => ({
+    ...u,
+    wallCount: countMap.get(u.id) ?? 0,
+  }))
+}
+
+export async function isUserBlocked(email: string): Promise<boolean> {
+  const row = await db
+    .select({ blocked: users.blocked })
+    .from(users)
+    .where(eq(users.email, email.toLowerCase()))
+    .limit(1)
+  return row[0]?.blocked ?? false
+}
+
+export async function isExistingUser(email: string): Promise<boolean> {
+  const row = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, email.toLowerCase()))
+    .limit(1)
+  return row.length > 0
+}
+
+export async function deleteUserSessions(userId: string) {
+  await db.delete(sessions).where(eq(sessions.userId, userId))
 }

@@ -2,12 +2,19 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { auth } from "@/server/auth"
 
 import { EmailSignInForm } from "./_components/email-sign-in-form"
+import { SignInError } from "./_components/sign-in-error"
 
 import { redirect } from "next/navigation"
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const session = await auth()
   if (session) redirect("/")
+
+  const error = (await searchParams).error as string | undefined
 
   return (
     <div className="flex grow items-center justify-center">
@@ -21,6 +28,7 @@ export default async function Page() {
           </div>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
+          <SignInError error={error} />
           <p className="text-center text-sm text-muted-foreground">
             Enter your email to receive a sign-in link.
           </p>

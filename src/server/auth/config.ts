@@ -1,6 +1,13 @@
 import { env } from "@/env"
 import { db } from "@/server/db"
 import {
+  deleteInviteByEmail,
+  isEmailInvited,
+  isExistingUser,
+  isInviteOnly,
+  isUserBlocked,
+} from "@/server/db/queries"
+import {
   accounts,
   sessions,
   users,
@@ -57,5 +64,37 @@ export const authConfig: NextAuthConfig = {
         isAdmin: session.user.isAdmin,
       },
     }),
+    async signIn({ user }) {
+      const email = user.email
+      if (!email) return false
+
+      // Check if the user is blocked
+      const blocked = await isUserBlocked(email)
+      if (blocked) {
+        return "/signin?error=blocked"
+      }
+
+      // Check invite-only mode
+      const inviteOnly = await isInviteOnly()
+      if (inviteOnly) {
+        const existingUser = await isExistingUser(email)
+        if (existingUser) return true
+
+        const invited = await isEmailInvited(email)
+        if (!invited) {
+          return "/signin?error=not-invited"
+        }
+      }
+
+      return true
+    },
+  },
+  events: {
+    async createUser({ user }) {
+      // When a new user is created via sign-up, remove them from the invite list
+      if (user.email) {
+        await deleteInviteByEmail(user.email)
+      }
+    },
   },
 }

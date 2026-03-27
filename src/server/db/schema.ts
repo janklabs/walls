@@ -30,6 +30,7 @@ export const users = createTable("user", {
     withTimezone: true,
   }).defaultNow(),
   isAdmin: boolean("is_admin").notNull().default(false),
+  blocked: boolean("blocked").notNull().default(false),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -123,4 +124,18 @@ export const settings = createTable("settings", {
     .primaryKey()
     .references(() => users.id),
   redirectToMyWall: boolean("redirect_to_my_wall").notNull().default(false),
+})
+
+export const invite = createTable("invite", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  invitedBy: varchar("invited_by", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  invitedAt: timestamp("invited_at", { mode: "date" }).notNull().defaultNow(),
+})
+
+export const appSettings = createTable("app_settings", {
+  key: varchar("key", { length: 255 }).primaryKey(),
+  value: varchar("value", { length: 255 }).notNull(),
 })

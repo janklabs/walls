@@ -6,6 +6,7 @@ import { auth } from "@/server/auth"
 import { db } from "@/server/db"
 import { getUploads } from "@/server/db/queries"
 import { users } from "@/server/db/schema"
+import { ensureGuestAccessOrAuth } from "@/server/guest-access"
 
 import { eq } from "drizzle-orm"
 import moment from "moment"
@@ -18,6 +19,8 @@ export default async function Page({
 }: {
   params: Promise<{ userId: string }>
 }) {
+  await ensureGuestAccessOrAuth()
+
   const session = await auth()
   const { userId } = await params
   const user = (await db.select().from(users).where(eq(users.id, userId)))[0]
