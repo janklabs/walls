@@ -6,6 +6,7 @@ import {
   isEmailInvited,
   isExistingUser,
 } from "@/server/db/queries"
+import { sendInviteEmail } from "@/server/mail"
 
 import { revalidatePath } from "next/cache"
 
@@ -37,10 +38,15 @@ export async function addInvite(email: string): Promise<{
 
   await addInviteEmail(trimmedEmail, session.user.id)
 
+  const inviterName = session.user.name ?? "An administrator"
+  const emailResult = await sendInviteEmail(trimmedEmail, inviterName)
+
   revalidatePath("/settings")
 
   return {
     success: true,
-    message: `Invited ${trimmedEmail}`,
+    message: emailResult.success
+      ? `Invited ${trimmedEmail}`
+      : `Invited ${trimmedEmail} (email notification failed)`,
   }
 }

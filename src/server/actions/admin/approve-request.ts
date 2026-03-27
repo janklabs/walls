@@ -2,6 +2,7 @@
 
 import { auth } from "@/server/auth"
 import { addInviteEmail, deleteInviteRequest } from "@/server/db/queries"
+import { sendInviteEmail } from "@/server/mail"
 
 import { revalidatePath } from "next/cache"
 
@@ -23,10 +24,15 @@ export async function approveRequest(id: number): Promise<{
   // Add to the invite list with the approving admin as the inviter
   await addInviteEmail(email, session.user.id)
 
+  const inviterName = session.user.name ?? "An administrator"
+  const emailResult = await sendInviteEmail(email, inviterName)
+
   revalidatePath("/settings")
 
   return {
     success: true,
-    message: `Approved and invited ${email}`,
+    message: emailResult.success
+      ? `Approved and invited ${email}`
+      : `Approved and invited ${email} (email notification failed)`,
   }
 }
