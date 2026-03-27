@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { auth } from "@/server/auth"
 
-import { EmailSignInForm } from "./_components/email-sign-in-form"
-import { SignInError } from "./_components/sign-in-error"
+import { RequestAccessForm } from "./form"
 
 import { redirect } from "next/navigation"
 
@@ -14,8 +13,7 @@ export default async function Page({
   const session = await auth()
   if (session) redirect("/")
 
-  const params = await searchParams
-  const error = params.error as string | undefined
+  const email = ((await searchParams).email as string | undefined) ?? ""
 
   return (
     <div className="flex grow items-center justify-center">
@@ -23,17 +21,17 @@ export default async function Page({
         <CardHeader>
           <div className="relative h-6">
             <h1 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 bg-card px-4 text-center font-clash text-2xl font-semibold text-card-foreground">
-              SIGN IN
+              REQUEST ACCESS
             </h1>
             <div className="absolute left-1/2 top-1/2 z-10 w-full -translate-x-1/2 border-t"></div>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
-          <SignInError error={error} />
           <p className="text-center text-sm text-muted-foreground">
-            Enter your email to receive a sign-in link.
+            This instance is invite-only. Submit a request and an administrator
+            will review it.
           </p>
-          <EmailSignInForm />
+          <RequestAccessForm initialEmail={email} />
         </CardContent>
       </Card>
     </div>
