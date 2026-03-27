@@ -1,0 +1,1 @@
+ALTER TABLE "walls_user" ADD COLUMN "last_seen" timestamp with time zone;

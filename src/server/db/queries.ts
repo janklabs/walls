@@ -217,6 +217,7 @@ export async function getAllUsers() {
       joinedAt: users.joinedAt,
       isAdmin: users.isAdmin,
       blocked: users.blocked,
+      lastSeen: users.lastSeen,
     })
     .from(users)
     .orderBy(desc(users.joinedAt))
@@ -258,4 +259,11 @@ export async function isExistingUser(email: string): Promise<boolean> {
 
 export async function deleteUserSessions(userId: string) {
   await db.delete(sessions).where(eq(sessions.userId, userId))
+}
+
+export async function updateLastSeen(userId: string) {
+  await db
+    .update(users)
+    .set({ lastSeen: new Date() })
+    .where(eq(users.id, userId))
 }

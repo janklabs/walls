@@ -16,7 +16,7 @@ import { setSelfAbsorbedMode } from "@/server/actions/toggle-self-absorbed"
 import type { getAllUsers, getInviteList } from "@/server/db/queries"
 import type { _getSettings } from "@/server/settings"
 
-import { useTheme } from "next-themes"
+import moment from "moment"
 import dynamic from "next/dynamic"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -272,7 +272,9 @@ function UserManagement({
                   <div className="text-xs text-neutral-400">
                     {user.email} · {user.wallCount}{" "}
                     {user.wallCount === 1 ? "wall" : "walls"} · Joined{" "}
-                    {user.joinedAt?.toLocaleDateString() ?? "unknown"}
+                    {user.joinedAt?.toLocaleDateString() ?? "unknown"} · Last
+                    seen{" "}
+                    {user.lastSeen ? moment(user.lastSeen).fromNow() : "never"}
                   </div>
                 </div>
               </div>

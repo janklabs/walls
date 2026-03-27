@@ -6,6 +6,7 @@ import {
   isExistingUser,
   isInviteOnly,
   isUserBlocked,
+  updateLastSeen,
 } from "@/server/db/queries"
 import {
   accounts,
@@ -56,14 +57,22 @@ export const authConfig: NextAuthConfig = {
     verificationTokensTable: verificationTokens,
   }),
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-        isAdmin: session.user.isAdmin,
-      },
-    }),
+    session: ({ session, user }) => {
+      // Update lastSeen with 1-minute debounce (fire-and-forget)
+      const lastSeen = (user as { lastSeen?: Date | null }).lastSeen
+      if (!lastSeen || Date.now() - lastSeen.getTime() > 60_000) {
+        void updateLastSeen(user.id)
+      }
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          isAdmin: session.user.isAdmin,
+        },
+      }
+    },
     async signIn({ user }) {
       const email = user.email
       if (!email) return false
