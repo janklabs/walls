@@ -47,34 +47,34 @@ npm run dev
 
 ## Environment Variables
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `AUTH_URL` | Yes | Public-facing URL of the app (used by NextAuth for callbacks and magic links) |
-| `AUTH_SECRET` | Production | NextAuth secret — generate with `npx auth secret` |
-| `SMTP_HOST` | Yes | SMTP server hostname |
-| `SMTP_PORT` | No | SMTP port (default `587`) |
-| `SMTP_USERNAME` | Yes | SMTP auth username |
-| `SMTP_PASSWORD` | Yes | SMTP auth password |
-| `SMTP_MAIL_FROM` | Yes | Sender email address for magic link emails |
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| Variable         | Required   | Description                                                                   |
+| ---------------- | ---------- | ----------------------------------------------------------------------------- |
+| `AUTH_URL`       | Yes        | Public-facing URL of the app (used by NextAuth for callbacks and magic links) |
+| `AUTH_SECRET`    | Production | NextAuth secret — generate with `npx auth secret`                             |
+| `SMTP_HOST`      | Yes        | SMTP server hostname                                                          |
+| `SMTP_PORT`      | No         | SMTP port (default `587`)                                                     |
+| `SMTP_USERNAME`  | Yes        | SMTP auth username                                                            |
+| `SMTP_PASSWORD`  | Yes        | SMTP auth password                                                            |
+| `SMTP_MAIL_FROM` | Yes        | Sender email address for magic link emails                                    |
+| `DATABASE_URL`   | Yes        | PostgreSQL connection string                                                  |
 
 See [`.env.example`](.env.example) for a full template.
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start dev server (Turbopack) |
-| `npm run build` | Production build |
-| `npm run start` | Start production server |
-| `npm run preview` | Build + start |
-| `npm run db:generate` | Generate Drizzle migrations |
-| `npm run db:migrate` | Run Drizzle migrations |
-| `npm run db:push` | Push schema directly to the database |
-| `npm run db:studio` | Open Drizzle Studio |
-| `npm run check` | ESLint + TypeScript type-check |
-| `npm run format:check` | Prettier format check |
-| `npm run format:write` | Prettier auto-format |
+| Command                | Description                          |
+| ---------------------- | ------------------------------------ |
+| `npm run dev`          | Start dev server (Turbopack)         |
+| `npm run build`        | Production build                     |
+| `npm run start`        | Start production server              |
+| `npm run preview`      | Build + start                        |
+| `npm run db:generate`  | Generate Drizzle migrations          |
+| `npm run db:migrate`   | Run Drizzle migrations               |
+| `npm run db:push`      | Push schema directly to the database |
+| `npm run db:studio`    | Open Drizzle Studio                  |
+| `npm run check`        | ESLint + TypeScript type-check       |
+| `npm run format:check` | Prettier format check                |
+| `npm run format:write` | Prettier auto-format                 |
 
 ## Deployment
 
