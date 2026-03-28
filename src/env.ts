@@ -17,7 +17,7 @@ export const env = createEnv({
     SMTP_USERNAME: z.string(),
     SMTP_PASSWORD: z.string(),
     SMTP_MAIL_FROM: z.string().email(),
-    AUTH_URL: z.string().url().optional(),
+    APP_URL: z.string().url().optional(),
     DATABASE_URL: z.string().url(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -45,7 +45,7 @@ export const env = createEnv({
     SMTP_USERNAME: process.env.SMTP_USERNAME,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     SMTP_MAIL_FROM: process.env.SMTP_MAIL_FROM,
-    AUTH_URL: process.env.AUTH_URL,
+    APP_URL: process.env.APP_URL,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,

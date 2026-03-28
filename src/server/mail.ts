@@ -15,7 +15,7 @@ export async function sendInviteEmail(
   email: string,
   inviterName: string,
 ): Promise<{ success: boolean }> {
-  const signInUrl = env.AUTH_URL ? `${env.AUTH_URL}/signin` : null
+  const signInUrl = env.APP_URL ? `${env.APP_URL}/signin` : null
 
   const lines = [
     "You've been invited to join a Walls instance — a place to share and discover wallpapers.",
