@@ -38,14 +38,14 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    AUTH_URL: process.env.AUTH_URL,
+    AUTH_URL: process.env.APP_URL,
+    APP_URL: process.env.APP_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
     SMTP_HOST: process.env.SMTP_HOST,
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_USERNAME: process.env.SMTP_USERNAME,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     SMTP_MAIL_FROM: process.env.SMTP_MAIL_FROM,
-    APP_URL: process.env.APP_URL,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
