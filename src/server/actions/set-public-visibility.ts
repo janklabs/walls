@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "../auth"
+import { getSession } from "../auth"
 import { db } from "../db"
 import { file } from "../db/schema"
 
@@ -14,7 +14,7 @@ export async function setPublicVisibility({
   id: number
   publicVisibility: boolean
 }) {
-  const session = await auth()
+  const session = await getSession()
   if (!session)
     return {
       status: "error" as const,

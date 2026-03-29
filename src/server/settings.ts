@@ -1,4 +1,4 @@
-import { auth } from "./auth"
+import { getSession } from "./auth"
 import { db } from "./db"
 import { settings } from "./db/schema"
 
@@ -29,7 +29,8 @@ export async function _getSettings(userId: string) {
 }
 
 export async function _getRedirectToMyWallCurrentUser(): Promise<boolean> {
-  const user = (await auth())?.user
+  const session = await getSession()
+  const user = session?.user
   if (!user) return false
   const user_settings = await _getSettings(user.id)
   return user_settings.redirectToMyWall

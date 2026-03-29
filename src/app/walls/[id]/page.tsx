@@ -2,7 +2,7 @@ import { Back } from "@/components/back"
 import { OptimizedImage } from "@/components/optimized-image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 import { getImageMd } from "@/server/db/queries"
 import { ensureGuestAccessOrAuth } from "@/server/guest-access"
 
@@ -28,7 +28,7 @@ export default async function Page({
     notFound()
   }
 
-  const session = await auth()
+  const session = await getSession()
   const isOwner = session?.user.id == image.uploader.id
   const isAdmin = !!session?.user.isAdmin
 

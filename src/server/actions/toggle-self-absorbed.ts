@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "../auth"
+import { getSession } from "../auth"
 import { db } from "../db"
 import { settings } from "../db/schema"
 import { _getSettings } from "../settings"
@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache"
 export async function setSelfAbsorbedMode(
   selfAbsorbedMode: boolean,
 ): Promise<{ success: boolean; message: string }> {
-  const user = (await auth())?.user
+  const user = (await getSession())?.user
   if (!user) return { success: false, message: "Not authenticated" }
 
   const redirectToMyWall = selfAbsorbedMode ? true : false

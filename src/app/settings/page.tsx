@@ -1,4 +1,4 @@
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 import {
   getAllUsers,
   getAppSetting,
@@ -12,7 +12,7 @@ import { Settings } from "./client"
 import { redirect } from "next/navigation"
 
 export default async function Page() {
-  const session = await auth()
+  const session = await getSession()
   const user = session?.user
   if (!user) redirect("/signin")
 

@@ -1,17 +1,28 @@
-import { authConfig } from "./config"
+import { type Session, auth } from "./config"
 
-import NextAuth from "next-auth"
+import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { cache } from "react"
 
-const { auth: uncachedAuth, handlers, signIn, signOut } = NextAuth(authConfig)
+export { auth }
+export type { Session }
 
-const auth = cache(uncachedAuth)
+/**
+ * Get the current session. Cached per-request via React cache().
+ */
+export const getSession = cache(async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  return session
+})
 
-async function ensureAuth() {
-  const session = await auth()
+/**
+ * Ensure the user is authenticated. Redirects to /signin if not.
+ * Returns a non-null session.
+ */
+export async function ensureAuth() {
+  const session = await getSession()
   if (!session) redirect("/signin")
   return session
 }
-
-export { auth, handlers, signIn, signOut, ensureAuth }

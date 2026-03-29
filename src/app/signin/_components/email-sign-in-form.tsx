@@ -2,14 +2,16 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { authClient } from "@/lib/auth-client"
 
-import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export function EmailSignInForm() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,7 +25,30 @@ export function EmailSignInForm() {
     setIsLoading(true)
 
     try {
-      await signIn("nodemailer", { email, callbackUrl: "/" })
+      const { error: signInError } = await authClient.signIn.magicLink({
+        email,
+        callbackURL: "/",
+      })
+
+      if (signInError) {
+        if (signInError.status === 403) {
+          const body = signInError as { message?: string; redirectTo?: string }
+          if (body.redirectTo) {
+            router.push(body.redirectTo)
+            return
+          }
+          setError(body.message ?? "Access denied.")
+        } else {
+          setError(
+            signInError.message ?? "Something went wrong. Please try again.",
+          )
+        }
+        setIsLoading(false)
+        return
+      }
+
+      // Redirect to verify-request page on success
+      router.push("/auth/verify-request")
     } catch {
       setError("Something went wrong. Please try again.")
       setIsLoading(false)

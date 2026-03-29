@@ -43,6 +43,13 @@
       "when": 1774634498551,
       "tag": "0005_mute_mercury",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1774994602000,
+      "tag": "0006_better_auth_migration",
+      "breakpoints": true
     }
   ]
 }

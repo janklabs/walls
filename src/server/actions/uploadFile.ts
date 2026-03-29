@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "../auth"
+import { getSession } from "../auth"
 import { existsFileName, insertFile } from "../db/queries"
 
 import { fromByteArray } from "base64-js"
@@ -19,7 +19,7 @@ async function getNormalSize(input: Buffer) {
 }
 
 export async function uploadFile(file: File) {
-  const session = await auth()
+  const session = await getSession()
   if (!session)
     return {
       status: "error" as const,

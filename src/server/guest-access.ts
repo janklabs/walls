@@ -1,4 +1,4 @@
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 import { isGuestViewingAllowed } from "@/server/db/queries"
 
 import { redirect } from "next/navigation"
@@ -11,7 +11,7 @@ import { redirect } from "next/navigation"
  * Returns the session (or null if guest access is allowed and user is not signed in).
  */
 export async function ensureGuestAccessOrAuth() {
-  const session = await auth()
+  const session = await getSession()
   if (session) return session
 
   const guestAllowed = await isGuestViewingAllowed()
@@ -26,7 +26,7 @@ export async function ensureGuestAccessOrAuth() {
  * Same check but for API routes - returns a boolean instead of redirecting.
  */
 export async function canAccessAsGuest(): Promise<boolean> {
-  const session = await auth()
+  const session = await getSession()
   if (session) return true
 
   return await isGuestViewingAllowed()

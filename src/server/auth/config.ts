@@ -8,102 +8,146 @@ import {
   isUserBlocked,
   updateLastSeen,
 } from "@/server/db/queries"
-import {
-  accounts,
-  sessions,
-  users,
-  verificationTokens,
-} from "@/server/db/schema"
+import * as schema from "@/server/db/schema"
 
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { type DefaultSession, type NextAuthConfig } from "next-auth"
-import EmailProvider from "next-auth/providers/nodemailer"
+import { betterAuth } from "better-auth"
+import { drizzleAdapter } from "better-auth/adapters/drizzle"
+import { createAuthMiddleware } from "better-auth/api"
+import { magicLink } from "better-auth/plugins"
+import { createTransport } from "nodemailer"
 
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string
-      isAdmin: boolean
-    } & DefaultSession["user"]
-  }
-
-  // interface User {}
-}
-
-export const authConfig: NextAuthConfig = {
-  trustHost: true,
-  pages: {
-    signIn: "/signin",
-    signOut: "/signout",
-    verifyRequest: "/auth/verify-request",
+const transport = createTransport({
+  host: env.SMTP_HOST,
+  port: Number(env.SMTP_PORT),
+  auth: {
+    user: env.SMTP_USERNAME,
+    pass: env.SMTP_PASSWORD,
   },
-  providers: [
-    EmailProvider({
-      server: {
-        host: env.SMTP_HOST,
-        port: Number(env.SMTP_PORT),
-        auth: {
-          user: env.SMTP_USERNAME,
-          pass: env.SMTP_PASSWORD,
-        },
+})
+
+export const auth = betterAuth({
+  baseURL: env.AUTH_URL,
+  secret: env.AUTH_SECRET,
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema: {
+      ...schema,
+      user: schema.users,
+      session: schema.sessions,
+      account: schema.accounts,
+      verification: schema.verification,
+    },
+  }),
+  user: {
+    modelName: "user",
+    additionalFields: {
+      isAdmin: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
       },
-      from: env.SMTP_MAIL_FROM,
+      blocked: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+      joinedAt: {
+        type: "date",
+        required: false,
+        input: false,
+      },
+      lastSeen: {
+        type: "date",
+        required: false,
+        input: false,
+      },
+    },
+  },
+  session: {
+    modelName: "session",
+  },
+  account: {
+    modelName: "account",
+  },
+  plugins: [
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await transport.sendMail({
+          from: env.SMTP_MAIL_FROM,
+          to: email,
+          subject: "Sign in to Walls",
+          text: `Click this link to sign in:\n\n${url}\n\nIf you didn't request this, you can ignore this email.`,
+          html: `<p>Click <a href="${url}">here</a> to sign in to Walls.</p><p>If you didn't request this, you can ignore this email.</p>`,
+        })
+      },
     }),
   ],
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }),
-  callbacks: {
-    session: ({ session, user }) => {
-      // Update lastSeen with 1-minute debounce (fire-and-forget)
-      const lastSeen = (user as { lastSeen?: Date | null }).lastSeen
-      if (!lastSeen || Date.now() - lastSeen.getTime() > 60_000) {
-        void updateLastSeen(user.id)
-      }
-
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: user.id,
-          isAdmin: session.user.isAdmin,
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // When a new user is created via sign-up, remove them from the invite list
+          if (user.email) {
+            await deleteInviteByEmail(user.email)
+          }
         },
-      }
+      },
     },
-    async signIn({ user }) {
-      const email = user.email
-      if (!email) return false
+    session: {
+      create: {
+        after: async (session) => {
+          // Update lastSeen on session creation
+          void updateLastSeen(session.userId)
+        },
+      },
+    },
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      // Intercept magic link sign-in to enforce blocked/invite-only checks
+      if (ctx.path === "/sign-in/magic-link") {
+        const body = ctx.body as { email?: string } | undefined
+        const email = body?.email
+        if (!email) return
 
-      // Check if the user is blocked
-      const blocked = await isUserBlocked(email)
-      if (blocked) {
-        return "/signin?error=blocked"
-      }
+        // Check if the user is blocked
+        const blocked = await isUserBlocked(email)
+        if (blocked) {
+          return new Response(
+            JSON.stringify({
+              error: "blocked",
+              message: "This account has been blocked.",
+            }),
+            { status: 403, headers: { "Content-Type": "application/json" } },
+          )
+        }
 
-      // Check invite-only mode
-      const inviteOnly = await isInviteOnly()
-      if (inviteOnly) {
-        const existingUser = await isExistingUser(email)
-        if (existingUser) return true
-
-        const invited = await isEmailInvited(email)
-        if (!invited) {
-          return `/request-access?email=${encodeURIComponent(email)}`
+        // Check invite-only mode
+        const inviteOnly = await isInviteOnly()
+        if (inviteOnly) {
+          const existingUser = await isExistingUser(email)
+          if (!existingUser) {
+            const invited = await isEmailInvited(email)
+            if (!invited) {
+              return new Response(
+                JSON.stringify({
+                  error: "invite_only",
+                  message: "This instance is invite-only.",
+                  redirectTo: `/request-access?email=${encodeURIComponent(email)}`,
+                }),
+                {
+                  status: 403,
+                  headers: { "Content-Type": "application/json" },
+                },
+              )
+            }
+          }
         }
       }
+    }),
+  },
+})
 
-      return true
-    },
-  },
-  events: {
-    async createUser({ user }) {
-      // When a new user is created via sign-up, remove them from the invite list
-      if (user.email) {
-        await deleteInviteByEmail(user.email)
-      }
-    },
-  },
-}
+export type Session = typeof auth.$Infer.Session

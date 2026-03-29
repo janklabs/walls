@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 
 import { EmailSignInForm } from "./_components/email-sign-in-form"
 import { SignInError } from "./_components/sign-in-error"
@@ -11,7 +11,7 @@ export default async function Page({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const session = await auth()
+  const session = await getSession()
   if (session) redirect("/")
 
   const params = await searchParams

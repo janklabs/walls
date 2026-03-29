@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 import { db } from "@/server/db"
 import { users } from "@/server/db/schema"
 
@@ -11,7 +11,7 @@ export async function toggleUserAdmin(userId: string): Promise<{
   success: boolean
   message: string
 }> {
-  const session = await auth()
+  const session = await getSession()
   if (!session?.user.isAdmin) {
     return { success: false, message: "Not authorized" }
   }

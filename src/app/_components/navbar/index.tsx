@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { env } from "@/env"
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 
 import { ThemeToggle } from "./theme-toggle"
 
@@ -14,7 +14,7 @@ import {
 } from "react-icons/pi"
 
 export async function Navbar() {
-  const session = await auth()
+  const session = await getSession()
   return (
     <nav className="flex justify-between px-4 py-2">
       <div className="flex items-center gap-2">

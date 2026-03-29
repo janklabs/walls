@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "../auth"
+import { getSession } from "../auth"
 import { db } from "../db"
 import { existsFileName, updateFile } from "../db/queries"
 import { file } from "../db/schema"
@@ -19,7 +19,7 @@ export async function renameFile({
   id: number
   basename: string
 }) {
-  const session = await auth()
+  const session = await getSession()
   if (!session)
     return {
       status: "error" as const,

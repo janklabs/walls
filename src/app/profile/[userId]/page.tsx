@@ -2,7 +2,7 @@ import { FancyHoverIcon } from "@/components/fancy-hover-icon"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Wall } from "@/components/wall"
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 import { db } from "@/server/db"
 import { getUploads } from "@/server/db/queries"
 import { users } from "@/server/db/schema"
@@ -21,7 +21,7 @@ export default async function Page({
 }) {
   await ensureGuestAccessOrAuth()
 
-  const session = await auth()
+  const session = await getSession()
   const { userId } = await params
   const user = (await db.select().from(users).where(eq(users.id, userId)))[0]
 

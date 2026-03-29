@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { auth } from "@/server/auth"
+import { getSession } from "@/server/auth"
 
 import { CancelAndGoBack } from "./_components/cancel"
 import { SignOutButton } from "./_components/sign-out-button"
@@ -7,7 +7,7 @@ import { SignOutButton } from "./_components/sign-out-button"
 import { redirect } from "next/navigation"
 
 export default async function Page() {
-  const session = await auth()
+  const session = await getSession()
   if (!session) redirect("/")
 
   return (
