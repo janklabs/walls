@@ -26,7 +26,7 @@ const transport = createTransport({
 })
 
 export const auth = betterAuth({
-  baseURL: env.AUTH_URL,
+  baseURL: env.APP_URL,
   secret: env.AUTH_SECRET,
   database: drizzleAdapter(db, {
     provider: "pg",

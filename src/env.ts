@@ -7,7 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    AUTH_URL: z.string().url(),
+    APP_URL: z.string().url(),
     AUTH_SECRET:
       process.env.NODE_ENV === "production"
         ? z.string()
@@ -17,7 +17,6 @@ export const env = createEnv({
     SMTP_USERNAME: z.string(),
     SMTP_PASSWORD: z.string(),
     SMTP_MAIL_FROM: z.string().email(),
-    APP_URL: z.string().url().optional(),
     DATABASE_URL: z.string().url(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -38,7 +37,6 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    AUTH_URL: process.env.APP_URL,
     APP_URL: process.env.APP_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
     SMTP_HOST: process.env.SMTP_HOST,

@@ -60,9 +60,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      AUTH_URL: "http://localhost:3000"
-      AUTH_SECRET: "change-me-to-a-random-secret"
       APP_URL: "http://localhost:3000"
+      AUTH_SECRET: "change-me-to-a-random-secret"
       SMTP_HOST: mailpit
       SMTP_PORT: "1025"
       SMTP_USERNAME: ""
@@ -109,17 +108,16 @@ Then open [http://localhost:3000](http://localhost:3000) for the app and [http:/
 
 ## Environment Variables
 
-| Variable         | Required   | Description                                                       |
-| ---------------- | ---------- | ----------------------------------------------------------------- |
-| `AUTH_URL`       | Yes        | Public-facing URL of the app (used by better-auth for callbacks)  |
-| `AUTH_SECRET`    | Production | Auth secret — generate with `openssl rand -base64 32`             |
-| `APP_URL`        | No         | App URL used in invite emails (defaults to `AUTH_URL` if not set) |
-| `SMTP_HOST`      | Yes        | SMTP server hostname                                              |
-| `SMTP_PORT`      | No         | SMTP port (default `587`)                                         |
-| `SMTP_USERNAME`  | Yes        | SMTP auth username                                                |
-| `SMTP_PASSWORD`  | Yes        | SMTP auth password                                                |
-| `SMTP_MAIL_FROM` | Yes        | Sender email address for magic link emails                        |
-| `DATABASE_URL`   | Yes        | PostgreSQL connection string                                      |
+| Variable         | Required   | Description                                                    |
+| ---------------- | ---------- | -------------------------------------------------------------- |
+| `APP_URL`        | Yes        | Public-facing URL of the app (used for auth and invite emails) |
+| `AUTH_SECRET`    | Production | Auth secret — generate with `openssl rand -base64 32`          |
+| `SMTP_HOST`      | Yes        | SMTP server hostname                                           |
+| `SMTP_PORT`      | No         | SMTP port (default `587`)                                      |
+| `SMTP_USERNAME`  | Yes        | SMTP auth username                                             |
+| `SMTP_PASSWORD`  | Yes        | SMTP auth password                                             |
+| `SMTP_MAIL_FROM` | Yes        | Sender email address for magic link emails                     |
+| `DATABASE_URL`   | Yes        | PostgreSQL connection string                                   |
 
 See [`.env.example`](.env.example) for a full template.
 
