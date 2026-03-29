@@ -8,6 +8,7 @@ import { Providers } from "./_components/providers"
 import { GeistSans } from "geist/font/sans"
 import { type Metadata } from "next"
 import localFont from "next/font/local"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Walls",
@@ -48,8 +49,10 @@ export default function RootLayout({
     >
       <body className="flex h-screen flex-col dark:bg-black">
         <Providers>
-          <Navbar />
-          {children}
+          <Suspense>
+            <Navbar />
+            {children}
+          </Suspense>
           <Toaster />
         </Providers>
       </body>

@@ -10,6 +10,8 @@ import {
 
 import { toByteArray } from "base64-js"
 import { count, desc, eq } from "drizzle-orm"
+import { cacheLife } from "next/cache"
+import sharp from "sharp"
 
 export async function getUploads(userId: string) {
   return await db
@@ -60,6 +62,9 @@ export async function insertFile({
 }
 
 export async function getImage(name: string) {
+  "use cache"
+  cacheLife("max")
+
   const base64 = (
     await db
       .select({
@@ -70,6 +75,26 @@ export async function getImage(name: string) {
       .limit(1)
   )[0]?.base64
   return base64 ? toByteArray(base64) : null
+}
+
+export async function getOptimizedImage(
+  name: string,
+  width: number,
+  quality: number,
+  format: "webp" | "jpeg" | "avif",
+) {
+  "use cache"
+  cacheLife("max")
+
+  const image = await getImage(name)
+  if (!image) return null
+
+  const optimized = await sharp(Buffer.from(image))
+    .resize(width)
+    .toFormat(format, { quality })
+    .toBuffer()
+
+  return new Uint8Array(optimized)
 }
 
 export async function getImageMd(id: number) {

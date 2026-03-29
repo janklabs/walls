@@ -1,8 +1,8 @@
 "use client"
 
+import { OptimizedImage } from "@/components/optimized-image"
 import { cn } from "@/lib/utils"
 
-import Image from "next/image"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 
@@ -59,9 +59,8 @@ export function Wall({
       <div className="columns-3xs gap-4">
         {filteredImages.map((image) => (
           <Link key={image.id} href={`/walls/${image.id}`} className="">
-            <Image
-              src={`/uploads/${image.name}`}
-              alt={image.name}
+            <OptimizedImage
+              name={image.name}
               width={400}
               height={400}
               className="mb-4 w-full rounded-lg transition-transform hover:scale-105"

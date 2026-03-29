@@ -1,4 +1,5 @@
 import { Back } from "@/components/back"
+import { OptimizedImage } from "@/components/optimized-image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { auth } from "@/server/auth"
@@ -55,9 +56,8 @@ export default async function Page({
         ) : null}
       </div>
       <div className="text-center">{image.name}</div>
-      <Image
-        src={`/uploads/${image.name}`}
-        alt={image.name}
+      <OptimizedImage
+        name={image.name}
         width={1920}
         height={800}
         className="mx-auto my-auto max-h-[60vh] max-w-[80vw] object-contain md:my-0"
