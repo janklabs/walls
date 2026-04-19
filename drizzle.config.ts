@@ -1,13 +1,15 @@
-import { env } from "@/env"
-
 import { type Config } from "drizzle-kit"
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set")
+}
 
 export default {
   schema: "./src/server/db/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: env.DATABASE_URL,
-    ssl: "require",
+    url: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_SSL === "true" ? "require" : false,
   },
   tablesFilter: ["walls_*"],
 } satisfies Config
