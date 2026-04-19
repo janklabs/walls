@@ -137,7 +137,13 @@ jobs:
 
   deploy-vps:
     name: Deploy to VPS
-    needs: [docker-push, docker-force-push, docker-push-migrate, docker-force-push-migrate]
+    needs:
+      [
+        docker-push,
+        docker-force-push,
+        docker-push-migrate,
+        docker-force-push-migrate,
+      ]
     if: always() && (needs.docker-push.result == 'success' || needs.docker-force-push.result == 'success')
     concurrency:
       group: deploy-vps
