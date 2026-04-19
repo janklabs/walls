@@ -7,7 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: docker build -t website .
+      - run: docker build --target app -t website .
+
+  docker-build-migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker build --target migrate -t website-migrate .
 
   formatting:
     runs-on: ubuntu-latest
