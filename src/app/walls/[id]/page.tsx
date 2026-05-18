@@ -3,13 +3,16 @@ import { OptimizedImage } from "@/components/optimized-image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { getSession } from "@/server/auth"
-import { getImageMd } from "@/server/db/queries"
+import { getDescendants, getImageMd, getParentName } from "@/server/db/queries"
 import { ensureGuestAccessOrAuth } from "@/server/guest-access"
 
 import { DeleteFile } from "./_components/delete-file"
 import { Nsfw } from "./_components/nsfw"
 import { PublicVisibility } from "./_components/public-visibility"
 import { RenameFile } from "./_components/rename-file"
+import { RemixButton } from "./_components/remix-button"
+import { VariantOf } from "./_components/variant-of"
+import { VariantsSection } from "./_components/variants-section"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -31,11 +34,17 @@ export default async function Page({
   const session = await getSession()
   const isOwner = session?.user.id == image.uploader.id
   const isAdmin = !!session?.user.isAdmin
+  const parentName = image.parentId ? await getParentName(image.parentId) : null
+  const descendants = (await getDescendants(image.id)).map((descendant) => ({
+    ...descendant,
+    nsfw: descendant.nsfw > 0,
+  }))
 
   return (
     <div className="flex flex-grow flex-col gap-4 p-2 px-4 md:mx-auto md:w-[90%] md:justify-center md:p-0">
       <div className="grid grid-cols-3 grid-rows-2 gap-2 md:flex">
         <Back className="col-start-1 row-start-1 w-full md:mr-auto md:w-fit" />
+        {session && !session.user.blocked && <RemixButton id={image.id} />}
         {isOwner || isAdmin ? (
           <>
             <PublicVisibility
@@ -55,6 +64,14 @@ export default async function Page({
           </>
         ) : null}
       </div>
+      {image.parentId ? (
+        <div className="flex justify-center md:justify-start">
+          <VariantOf
+            parentId={image.parentId}
+            parentName={parentName ?? "Unknown"}
+          />
+        </div>
+      ) : null}
       <div className="text-center">{image.name}</div>
       <OptimizedImage
         name={image.name}
@@ -104,6 +121,11 @@ export default async function Page({
           </Link>
         </div>
       </div>
+      <VariantsSection
+        descendants={descendants}
+        sessionUserId={session?.user.id}
+        isAdmin={session?.user.isAdmin ?? undefined}
+      />
     </div>
   )
 }

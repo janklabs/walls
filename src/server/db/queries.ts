@@ -9,9 +9,10 @@ import {
 } from "./schema"
 
 import { toByteArray } from "base64-js"
-import { count, desc, eq } from "drizzle-orm"
+import { count, desc, eq, sql } from "drizzle-orm"
 import { cacheLife } from "next/cache"
 import sharp from "sharp"
+import { RemixConfigSchema, type RemixConfig } from "../remix/types"
 
 export async function getUploads(userId: string) {
   return await db
@@ -43,6 +44,10 @@ export async function insertFile({
   height,
   width,
   size,
+  parentId,
+  nsfw,
+  publicVisibility,
+  remixConfig,
 }: {
   userId: string
   name: string
@@ -50,15 +55,27 @@ export async function insertFile({
   height: number
   width: number
   size: number
-}) {
-  await db.insert(file).values({
-    name,
-    base64,
-    uploadedBy: userId,
-    height,
-    width,
-    size,
-  })
+  parentId?: number
+  nsfw?: number
+  publicVisibility?: boolean
+  remixConfig?: import("../remix/types").RemixConfig
+}): Promise<{ id: number }> {
+  const result = await db
+    .insert(file)
+    .values({
+      name,
+      base64,
+      uploadedBy: userId,
+      height,
+      width,
+      size,
+      ...(parentId !== undefined && { parentId }),
+      ...(nsfw !== undefined && { nsfw }),
+      ...(publicVisibility !== undefined && { publicVisibility }),
+      ...(remixConfig !== undefined && { remixConfig }),
+    })
+    .returning({ id: file.id })
+  return result[0]!
 }
 
 export async function getImage(name: string) {
@@ -97,6 +114,62 @@ export async function getOptimizedImage(
   return new Uint8Array(optimized)
 }
 
+export async function getChildCount(fileId: number): Promise<number> {
+  const result = await db
+    .select({ c: count() })
+    .from(file)
+    .where(eq(file.parentId, fileId))
+  return Number(result[0]?.c ?? 0)
+}
+
+export async function getDescendants(rootId: number): Promise<
+  Array<{
+    id: number
+    name: string
+    nsfw: number
+    publicVisibility: boolean
+    uploadedBy: string
+    depth: number
+  }>
+> {
+  const result = await db.execute(sql`
+    WITH RECURSIVE descendants AS (
+      SELECT id, name, nsfw, public_visibility, uploaded_by, parent_id, 1 AS depth
+      FROM walls_file
+      WHERE parent_id = ${rootId}
+      UNION ALL
+      SELECT f.id, f.name, f.nsfw, f.public_visibility, f.uploaded_by, f.parent_id, d.depth + 1
+      FROM walls_file f
+      INNER JOIN descendants d ON f.parent_id = d.id
+      WHERE d.depth < 50
+    )
+    SELECT id, name, nsfw, public_visibility, uploaded_by, depth
+    FROM descendants
+    ORDER BY depth ASC, id ASC
+  `)
+  // Handle both postgres-js (result is array) and node-postgres (result.rows)
+  const rows = Array.isArray(result)
+    ? result
+    : (result as { rows: Array<Record<string, unknown>> }).rows
+  return rows.map((r: Record<string, unknown>) => ({
+    id: Number(r.id),
+    name: String(r.name),
+    nsfw: Number(r.nsfw),
+    publicVisibility: Boolean(r.public_visibility),
+    uploadedBy: String(r.uploaded_by),
+    depth: Number(r.depth),
+  }))
+}
+
+export async function getParentName(parentId: number): Promise<string | null> {
+  const result = await db
+    .select({ name: file.name })
+    .from(file)
+    .where(eq(file.id, parentId))
+    .limit(1)
+  return result[0]?.name ?? null
+}
+
 export async function getImageMd(id: number) {
   const _file_info = await db
     .select({
@@ -108,6 +181,8 @@ export async function getImageMd(id: number) {
       width: file.width,
       nsfw: file.nsfw,
       publicVisibility: file.publicVisibility,
+      parentId: file.parentId,
+      remixConfig: file.remixConfig,
     })
     .from(file)
     .where(eq(file.id, id))
@@ -123,6 +198,21 @@ export async function getImageMd(id: number) {
   const file_width = _file_info[0].width
   const file_nsfw = _file_info[0].nsfw
   const file_publicVisibility = _file_info[0].publicVisibility
+  const file_parentId = _file_info[0].parentId
+
+  // Validate remixConfig with Zod schema
+  let file_remixConfig: RemixConfig | null = null
+  if (_file_info[0].remixConfig !== null && _file_info[0].remixConfig !== undefined) {
+    const parsed = RemixConfigSchema.safeParse(_file_info[0].remixConfig)
+    if (parsed.success) {
+      file_remixConfig = parsed.data
+    } else {
+      console.warn(
+        `[getImageMd] Invalid remixConfig for file ${file_id}:`,
+        parsed.error.issues[0]?.message
+      )
+    }
+  }
 
   const uploader = (
     await db
@@ -145,6 +235,8 @@ export async function getImageMd(id: number) {
     nsfw: file_nsfw,
     uploader: uploader,
     publicVisibility: file_publicVisibility,
+    parentId: file_parentId,
+    remixConfig: file_remixConfig,
   }
 }
 

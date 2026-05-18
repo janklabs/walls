@@ -1,8 +1,10 @@
 import { relations } from "drizzle-orm"
 import {
+  AnyPgColumn,
   boolean,
   index,
   integer,
+  jsonb,
   pgTableCreator,
   text,
   timestamp,
@@ -149,20 +151,28 @@ export const verification = createTable("verification", {
 
 // ── App-specific tables ──────────────────────────────────────────────
 
-export const file = createTable("file", {
-  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  name: varchar("name", { length: 255 }).notNull().unique(),
-  base64: text("base64").notNull(),
-  uploadedBy: varchar("uploaded_by", { length: 255 })
-    .notNull()
-    .references(() => users.id),
-  uploadedAt: timestamp("uploaded_at", { mode: "date" }).notNull().defaultNow(),
-  height: integer("height").notNull(),
-  width: integer("width").notNull(),
-  size: integer("size").notNull(),
-  nsfw: integer("nsfw").notNull().default(0), // 0, 1, or 2
-  publicVisibility: boolean("public_visibility").notNull().default(false),
-})
+export const file = createTable(
+  "file",
+  {
+    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+    name: varchar("name", { length: 255 }).notNull().unique(),
+    base64: text("base64").notNull(),
+    uploadedBy: varchar("uploaded_by", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    uploadedAt: timestamp("uploaded_at", { mode: "date" }).notNull().defaultNow(),
+    height: integer("height").notNull(),
+    width: integer("width").notNull(),
+    size: integer("size").notNull(),
+    nsfw: integer("nsfw").notNull().default(0), // 0, 1, or 2
+    publicVisibility: boolean("public_visibility").notNull().default(false),
+    parentId: integer("parent_id").references((): AnyPgColumn => file.id, {
+      onDelete: "restrict",
+    }),
+    remixConfig: jsonb("remix_config"),
+  },
+  (t) => [index("file_parent_id_idx").on(t.parentId)],
+)
 
 export const settings = createTable("settings", {
   userId: varchar("user_id", { length: 255 })

@@ -3,6 +3,7 @@
 import { getSession } from "../auth"
 import { db } from "../db"
 import { file } from "../db/schema"
+import { getChildCount } from "../db/queries"
 
 import { eq } from "drizzle-orm"
 
@@ -28,6 +29,14 @@ export async function deleteFile(id: number) {
     return {
       status: "error" as const,
       message: "Not authorized",
+    }
+  }
+
+  const childCount = await getChildCount(id)
+  if (childCount > 0) {
+    return {
+      status: "error" as const,
+      message: `Cannot delete: this wallpaper has ${childCount} variant(s). Delete variants first.`,
     }
   }
 
