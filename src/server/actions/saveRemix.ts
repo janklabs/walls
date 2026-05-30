@@ -2,16 +2,15 @@
 
 import { getSession } from "../auth"
 import { db } from "../db"
-import {
-  existsFileName,
-  getImage,
-  getImageMd,
-  insertFile,
-} from "../db/queries"
+import { existsFileName, getImage, getImageMd, insertFile } from "../db/queries"
 import { file } from "../db/schema"
 import { FONTS } from "../remix/font-metadata"
 import { buildRemixSvg } from "../remix/svg"
-import { RemixConfigSchema, type RemixConfig, type TextBlock } from "../remix/types"
+import {
+  type RemixConfig,
+  RemixConfigSchema,
+  type TextBlock,
+} from "../remix/types"
 
 import { Resvg } from "@resvg/resvg-js"
 import { eq } from "drizzle-orm"
@@ -75,7 +74,9 @@ async function applyBlurBehindRegions(
   blocks: TextBlock[],
   dims: { width: number; height: number },
 ): Promise<Buffer> {
-  const blurBlocks = blocks.filter((b) => b.blurBehind.enabled && b.blurBehind.radius > 0)
+  const blurBlocks = blocks.filter(
+    (b) => b.blurBehind.enabled && b.blurBehind.radius > 0,
+  )
   if (blurBlocks.length === 0) return sourceBuf
 
   let current = sourceBuf
@@ -123,7 +124,8 @@ export async function saveRemix(input: {
   const parsedConfig: RemixConfig = parsed.data
 
   const sourceMd = await getImageMd(input.sourceId)
-  if (!sourceMd) return { status: "error", message: "Source wallpaper not found" }
+  if (!sourceMd)
+    return { status: "error", message: "Source wallpaper not found" }
 
   const isOwner = sourceMd.uploader.id === session.user.id
   const isAdmin = session.user.isAdmin === true
@@ -137,7 +139,8 @@ export async function saveRemix(input: {
   }
 
   const imageBytes = await getImage(sourceMd.name)
-  if (!imageBytes) return { status: "error", message: "Source image data not found" }
+  if (!imageBytes)
+    return { status: "error", message: "Source image data not found" }
 
   const width = sourceMd.width
   const height = sourceMd.height
@@ -175,9 +178,13 @@ export async function saveRemix(input: {
       overlays.push({ input: png, top: 0, left: 0, blend: "difference" })
     }
 
-    finalBuf = overlays.length === 0
-      ? await sharp(blurPrepped).toFormat("jpeg").toBuffer()
-      : await sharp(blurPrepped).composite(overlays).toFormat("jpeg").toBuffer()
+    finalBuf =
+      overlays.length === 0
+        ? await sharp(blurPrepped).toFormat("jpeg").toBuffer()
+        : await sharp(blurPrepped)
+            .composite(overlays)
+            .toFormat("jpeg")
+            .toBuffer()
   } catch (e) {
     return {
       status: "error",
@@ -209,9 +216,14 @@ export async function saveRemix(input: {
     let resolvedName: string
     const provided = input.name?.trim()
     if (provided && provided.length > 0) {
-      const candidate = provided.endsWith(".jpeg") ? provided : `${provided}.jpeg`
+      const candidate = provided.endsWith(".jpeg")
+        ? provided
+        : `${provided}.jpeg`
       if (await existsFileName(candidate)) {
-        return { status: "error", message: "A wallpaper with that name already exists" }
+        return {
+          status: "error",
+          message: "A wallpaper with that name already exists",
+        }
       }
       resolvedName = candidate
     } else {

@@ -35,7 +35,9 @@ export default async function Page({
         <div className="flex grow items-center justify-between rounded-xl border bg-neutral-200 p-4 shadow-xl dark:bg-neutral-800">
           <div className="flex items-center gap-4">
             <Avatar className="size-10">
-              {user.image ? <AvatarImage src={user.image} alt={user.name ?? ""} /> : null}
+              {user.image ? (
+                <AvatarImage src={user.image} alt={user.name ?? ""} />
+              ) : null}
               <AvatarFallback>{user.name![0]!}</AvatarFallback>
             </Avatar>
             <div className="text-xl font-semibold">{user.name}</div>

@@ -16,7 +16,11 @@ function escapeXmlAttr(input: string): string {
 
 const CHAR_WIDTH_FACTOR = 0.55
 
-function wrapText(text: string, maxWidthPx: number, fontSize: number): string[] {
+function wrapText(
+  text: string,
+  maxWidthPx: number,
+  fontSize: number,
+): string[] {
   const approxCharPx = fontSize * CHAR_WIDTH_FACTOR
   if (approxCharPx <= 0 || maxWidthPx <= 0) return [text]
   const maxChars = Math.max(1, Math.floor(maxWidthPx / approxCharPx))
@@ -101,12 +105,21 @@ function getAnchorX(
   return bboxLeft + bboxWidth / 2
 }
 
-function renderBlock(block: TextBlock, imageW: number, imageH: number, stripBlurMarkers: boolean): string {
+function renderBlock(
+  block: TextBlock,
+  imageW: number,
+  imageH: number,
+  stripBlurMarkers: boolean,
+): string {
   const centerX = (block.xPct / 100) * imageW
   const centerY = (block.yPct / 100) * imageH
   const maxWidthPx = (block.maxWidthPct / 100) * imageW
 
-  const { width: bboxWidth, height: bboxHeight, lines } = estimateTextBoundingBox(
+  const {
+    width: bboxWidth,
+    height: bboxHeight,
+    lines,
+  } = estimateTextBoundingBox(
     block.text,
     block.fontSize,
     block.lineHeight,
@@ -168,9 +181,7 @@ function renderBlock(block: TextBlock, imageW: number, imageH: number, stripBlur
   const tspans = lines
     .map((line, lineIndex) => {
       const dy =
-        lineIndex === 0
-          ? block.fontSize
-          : block.fontSize * block.lineHeight
+        lineIndex === 0 ? block.fontSize : block.fontSize * block.lineHeight
       const yStart = lineIndex === 0 ? bboxTop : undefined
       const xAttr = `x="${anchorX}"`
       const dyAttr =
@@ -190,7 +201,10 @@ export function buildRemixSvg(
   config: RemixConfig,
   imageW: number,
   imageH: number,
-  options?: { stripBlurMarkers?: boolean; blockFilter?: (block: TextBlock) => boolean },
+  options?: {
+    stripBlurMarkers?: boolean
+    blockFilter?: (block: TextBlock) => boolean
+  },
 ): string {
   const stripBlurMarkers = options?.stripBlurMarkers === true
   const blockFilter = options?.blockFilter ?? (() => true)

@@ -111,12 +111,8 @@
           "name": "walls_account_user_id_walls_user_id_fk",
           "tableFrom": "walls_account",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -265,12 +261,8 @@
           "name": "walls_file_uploaded_by_walls_user_id_fk",
           "tableFrom": "walls_file",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "uploaded_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["uploaded_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -278,12 +270,8 @@
           "name": "walls_file_parent_id_fkey",
           "tableFrom": "walls_file",
           "tableTo": "walls_file",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -293,9 +281,7 @@
         "walls_file_name_unique": {
           "name": "walls_file_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -349,12 +335,8 @@
           "name": "walls_invite_invited_by_walls_user_id_fk",
           "tableFrom": "walls_invite",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -364,9 +346,7 @@
         "walls_invite_email_unique": {
           "name": "walls_invite_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -415,9 +395,7 @@
         "walls_invite_request_email_unique": {
           "name": "walls_invite_request_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -501,12 +479,8 @@
           "name": "walls_session_user_id_walls_user_id_fk",
           "tableFrom": "walls_session",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -516,9 +490,7 @@
         "walls_session_token_unique": {
           "name": "walls_session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -549,12 +521,8 @@
           "name": "walls_settings_user_id_walls_user_id_fk",
           "tableFrom": "walls_settings",
           "tableTo": "walls_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

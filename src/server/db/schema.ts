@@ -160,7 +160,9 @@ export const file = createTable(
     uploadedBy: varchar("uploaded_by", { length: 255 })
       .notNull()
       .references(() => users.id),
-    uploadedAt: timestamp("uploaded_at", { mode: "date" }).notNull().defaultNow(),
+    uploadedAt: timestamp("uploaded_at", { mode: "date" })
+      .notNull()
+      .defaultNow(),
     height: integer("height").notNull(),
     width: integer("width").notNull(),
     size: integer("size").notNull(),

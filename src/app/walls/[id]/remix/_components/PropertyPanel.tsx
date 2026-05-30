@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea"
 import type { FontId } from "@/server/remix/font-metadata"
 import { FONTS } from "@/server/remix/font-metadata"
 import type { TextBlock } from "@/server/remix/types"
+
 import type { ReactNode } from "react"
 
 type PropertyPanelProps = {
@@ -181,7 +182,11 @@ function formatDecimal(value: number, digits = 1): string {
   return Number(value.toFixed(digits)).toString()
 }
 
-const SNAP_ANCHORS: ReadonlyArray<{ xPct: number; yPct: number; label: string }> = [
+const SNAP_ANCHORS: ReadonlyArray<{
+  xPct: number
+  yPct: number
+  label: string
+}> = [
   { xPct: 10, yPct: 10, label: "Top left" },
   { xPct: 50, yPct: 10, label: "Top center" },
   { xPct: 90, yPct: 10, label: "Top right" },
@@ -376,7 +381,9 @@ function PropertyPanelBody({
                 <Button
                   key={alignment}
                   type="button"
-                  variant={block.alignment === alignment ? "default" : "outline"}
+                  variant={
+                    block.alignment === alignment ? "default" : "outline"
+                  }
                   onClick={() => onChange({ ...block, alignment })}
                 >
                   {alignment === "left"
@@ -417,9 +424,7 @@ function PropertyPanelBody({
             max={100}
             value={block.maxWidthPct}
             valueLabel={`${block.maxWidthPct}%`}
-            onValueChange={(maxWidthPct) =>
-              onChange({ ...block, maxWidthPct })
-            }
+            onValueChange={(maxWidthPct) => onChange({ ...block, maxWidthPct })}
           />
         </div>
       </PanelSection>

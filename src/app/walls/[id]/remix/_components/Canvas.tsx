@@ -24,7 +24,9 @@ const FONT_FAMILIES: Record<TextBlock["fontId"], string> = {
   caveat: getFontCssVar("caveat"),
 }
 
-function getTextAnchor(alignment: TextBlock["alignment"]): "start" | "middle" | "end" {
+function getTextAnchor(
+  alignment: TextBlock["alignment"],
+): "start" | "middle" | "end" {
   if (alignment === "left") return "start"
   if (alignment === "right") return "end"
   return "middle"
@@ -68,14 +70,32 @@ export function Canvas({
             fontWeight={block.fontWeight === "bold" ? 700 : 400}
             fontStyle={block.italic ? "italic" : "normal"}
             fill={block.color}
-            style={block.autoInverse ? { mixBlendMode: "difference" } : undefined}
+            style={
+              block.autoInverse ? { mixBlendMode: "difference" } : undefined
+            }
             textAnchor={getTextAnchor(block.alignment)}
             dominantBaseline="middle"
             letterSpacing={block.letterSpacing}
-            stroke={block.outline.enabled && block.outline.width > 0 ? block.outline.color : undefined}
-            strokeWidth={block.outline.enabled && block.outline.width > 0 ? block.outline.width : undefined}
-            paintOrder={block.outline.enabled && block.outline.width > 0 ? "stroke fill" : undefined}
-            strokeLinejoin={block.outline.enabled && block.outline.width > 0 ? "round" : undefined}
+            stroke={
+              block.outline.enabled && block.outline.width > 0
+                ? block.outline.color
+                : undefined
+            }
+            strokeWidth={
+              block.outline.enabled && block.outline.width > 0
+                ? block.outline.width
+                : undefined
+            }
+            paintOrder={
+              block.outline.enabled && block.outline.width > 0
+                ? "stroke fill"
+                : undefined
+            }
+            strokeLinejoin={
+              block.outline.enabled && block.outline.width > 0
+                ? "round"
+                : undefined
+            }
           >
             {block.text}
           </text>

@@ -22,8 +22,7 @@ export function VariantsSection({
   if (descendants.length === 0) return null
 
   const visibleDescendants = descendants.filter((descendant) => {
-    const canViewRestricted =
-      isAdmin || sessionUserId === descendant.uploadedBy
+    const canViewRestricted = isAdmin || sessionUserId === descendant.uploadedBy
 
     if (descendant.nsfw && !canViewRestricted) return false
     if (!descendant.publicVisibility && !canViewRestricted) return false

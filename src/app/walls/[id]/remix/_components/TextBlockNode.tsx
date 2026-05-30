@@ -64,7 +64,8 @@ export function TextBlockNode({
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return
 
-    const canvasRect = event.currentTarget.parentElement?.getBoundingClientRect()
+    const canvasRect =
+      event.currentTarget.parentElement?.getBoundingClientRect()
 
     event.currentTarget.setPointerCapture(event.pointerId)
     setIsDragging(true)

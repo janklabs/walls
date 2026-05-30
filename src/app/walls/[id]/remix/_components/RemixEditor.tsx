@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import type { RemixConfig, TextBlock } from "@/server/remix/types"
 
-import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
-import { toast } from "sonner"
-
 import { Canvas } from "./Canvas"
 import { PropertyPanel } from "./PropertyPanel"
 import { SaveBar } from "./SaveBar"
+
+import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+import { toast } from "sonner"
 
 type RemixEditorProps = {
   sourceId: number
@@ -46,7 +46,13 @@ function createTextBlock(): TextBlock {
     xPct: 50,
     yPct: 50,
     outline: { enabled: false, color: "#000000", width: 0 },
-    shadow: { enabled: false, color: "#000000", offsetX: 0, offsetY: 0, blur: 0 },
+    shadow: {
+      enabled: false,
+      color: "#000000",
+      offsetX: 0,
+      offsetY: 0,
+      blur: 0,
+    },
     backdrop: { enabled: false, color: "#000000", opacity: 0, padding: 0 },
     blurBehind: { enabled: false, radius: 10 },
   }
@@ -118,7 +124,9 @@ export function RemixEditor({
   }
 
   function deleteBlock(id: string) {
-    setBlocks((currentBlocks) => currentBlocks.filter((block) => block.id !== id))
+    setBlocks((currentBlocks) =>
+      currentBlocks.filter((block) => block.id !== id),
+    )
     setSelectedBlockId((currentSelectedId) =>
       currentSelectedId === id ? null : currentSelectedId,
     )
@@ -190,7 +198,9 @@ export function RemixEditor({
           onChange={updateBlock}
           onDelete={() => selectedBlockId && deleteBlock(selectedBlockId)}
           onReorderUp={() => selectedBlockId && moveBlockUp(selectedBlockId)}
-          onReorderDown={() => selectedBlockId && moveBlockDown(selectedBlockId)}
+          onReorderDown={() =>
+            selectedBlockId && moveBlockDown(selectedBlockId)
+          }
         />
       </section>
 

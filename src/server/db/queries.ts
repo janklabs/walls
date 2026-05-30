@@ -1,4 +1,5 @@
 import { db } from "."
+import { type RemixConfig, RemixConfigSchema } from "../remix/types"
 import {
   appSettings,
   file,
@@ -12,7 +13,6 @@ import { toByteArray } from "base64-js"
 import { count, desc, eq, sql } from "drizzle-orm"
 import { cacheLife } from "next/cache"
 import sharp from "sharp"
-import { RemixConfigSchema, type RemixConfig } from "../remix/types"
 
 export async function getUploads(userId: string) {
   return await db
@@ -202,14 +202,17 @@ export async function getImageMd(id: number) {
 
   // Validate remixConfig with Zod schema
   let file_remixConfig: RemixConfig | null = null
-  if (_file_info[0].remixConfig !== null && _file_info[0].remixConfig !== undefined) {
+  if (
+    _file_info[0].remixConfig !== null &&
+    _file_info[0].remixConfig !== undefined
+  ) {
     const parsed = RemixConfigSchema.safeParse(_file_info[0].remixConfig)
     if (parsed.success) {
       file_remixConfig = parsed.data
     } else {
       console.warn(
         `[getImageMd] Invalid remixConfig for file ${file_id}:`,
-        parsed.error.issues[0]?.message
+        parsed.error.issues[0]?.message,
       )
     }
   }

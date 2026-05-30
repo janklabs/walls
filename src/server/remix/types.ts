@@ -3,7 +3,13 @@ import { z } from "zod"
 export const TextBlockSchema = z.object({
   id: z.string(),
   text: z.string().max(500),
-  fontId: z.enum(["satoshi", "clash-display", "fraunces", "jetbrains-mono", "caveat"]),
+  fontId: z.enum([
+    "satoshi",
+    "clash-display",
+    "fraunces",
+    "jetbrains-mono",
+    "caveat",
+  ]),
   fontSize: z.number().finite().min(8).max(400),
   fontWeight: z.enum(["normal", "bold"]),
   italic: z.boolean(),

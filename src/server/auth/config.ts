@@ -90,7 +90,8 @@ export const auth = betterAuth({
         before: async (user) => {
           // Magic-link signups arrive with no name. Derive a sensible default
           // from the email prefix so the UI always has something to render.
-          const hasName = typeof user.name === "string" && user.name.trim().length > 0
+          const hasName =
+            typeof user.name === "string" && user.name.trim().length > 0
           if (hasName || !user.email) {
             return { data: user }
           }
