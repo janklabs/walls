@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import type { TextBlock } from "@/server/remix/types"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import type { MouseEvent, PointerEvent } from "react"
 
 const FONT_SIZE_TO_HEIGHT_RATIO = 1.2
@@ -49,6 +49,7 @@ export function TextBlockNode({
 }: TextBlockNodeProps) {
   const dragStartRef = useRef<DragStart | null>(null)
   const suppressClickRef = useRef(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   const estimatedHeightPx = Math.max(
     MIN_NODE_HEIGHT_PX,
@@ -66,6 +67,7 @@ export function TextBlockNode({
     const canvasRect = event.currentTarget.parentElement?.getBoundingClientRect()
 
     event.currentTarget.setPointerCapture(event.pointerId)
+    setIsDragging(true)
     dragStartRef.current = {
       pointerId: event.pointerId,
       clientX: event.clientX,
@@ -80,7 +82,7 @@ export function TextBlockNode({
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
     const dragStart = dragStartRef.current
-    if (!dragStart || dragStart.pointerId !== event.pointerId) return
+    if (dragStart?.pointerId !== event.pointerId) return
 
     const deltaXPx = event.clientX - dragStart.clientX
     const deltaYPx = event.clientY - dragStart.clientY
@@ -100,11 +102,12 @@ export function TextBlockNode({
 
   function finishPointer(event: PointerEvent<HTMLDivElement>) {
     const dragStart = dragStartRef.current
-    if (!dragStart || dragStart.pointerId !== event.pointerId) return
+    if (dragStart?.pointerId !== event.pointerId) return
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId)
     }
+    setIsDragging(false)
     suppressClickRef.current = dragStart.hasMoved
     dragStartRef.current = null
   }
@@ -140,7 +143,7 @@ export function TextBlockNode({
         width: `${block.maxWidthPct}%`,
         minHeight: `${heightPct}%`,
         transform: "translate(-50%, -50%)",
-        cursor: dragStartRef.current ? "grabbing" : "grab",
+        cursor: isDragging ? "grabbing" : "grab",
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

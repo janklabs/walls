@@ -27,13 +27,9 @@ import type { FontId } from "@/server/remix/font-metadata"
 import { FONTS } from "@/server/remix/font-metadata"
 import type { TextBlock } from "@/server/remix/types"
 import type { ReactNode } from "react"
-import { useEffect } from "react"
-
-import { useAutoInverse } from "./useAutoInverse"
 
 type PropertyPanelProps = {
   block: TextBlock | null
-  sourceId: number
   onChange: (block: TextBlock) => void
   onDelete: () => void
   onReorderUp: () => void
@@ -42,7 +38,6 @@ type PropertyPanelProps = {
 
 type PropertyPanelBodyProps = {
   block: TextBlock
-  sourceId: number
   onChange: (block: TextBlock) => void
   onDelete: () => void
   onReorderUp: () => void
@@ -186,9 +181,59 @@ function formatDecimal(value: number, digits = 1): string {
   return Number(value.toFixed(digits)).toString()
 }
 
+const SNAP_ANCHORS: ReadonlyArray<{ xPct: number; yPct: number; label: string }> = [
+  { xPct: 10, yPct: 10, label: "Top left" },
+  { xPct: 50, yPct: 10, label: "Top center" },
+  { xPct: 90, yPct: 10, label: "Top right" },
+  { xPct: 10, yPct: 50, label: "Middle left" },
+  { xPct: 50, yPct: 50, label: "Middle center" },
+  { xPct: 90, yPct: 50, label: "Middle right" },
+  { xPct: 10, yPct: 90, label: "Bottom left" },
+  { xPct: 50, yPct: 90, label: "Bottom center" },
+  { xPct: 90, yPct: 90, label: "Bottom right" },
+]
+
+function SnapGrid({
+  xPct,
+  yPct,
+  onSnap,
+}: {
+  xPct: number
+  yPct: number
+  onSnap: (xPct: number, yPct: number) => void
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Snap to anchor"
+      className="grid aspect-square w-full max-w-44 grid-cols-3 grid-rows-3 gap-1 rounded-lg border bg-background p-2"
+    >
+      {SNAP_ANCHORS.map((anchor) => {
+        const isActive = anchor.xPct === xPct && anchor.yPct === yPct
+        return (
+          <button
+            key={anchor.label}
+            type="button"
+            aria-label={anchor.label}
+            aria-pressed={isActive}
+            onClick={() => onSnap(anchor.xPct, anchor.yPct)}
+            className={
+              "flex items-center justify-center rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
+              (isActive
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-muted hover:bg-muted-foreground/20")
+            }
+          >
+            <span className="size-1.5 rounded-full bg-current" />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 export function PropertyPanel({
   block,
-  sourceId,
   onChange,
   onDelete,
   onReorderUp,
@@ -205,7 +250,6 @@ export function PropertyPanel({
   return (
     <PropertyPanelBody
       block={block}
-      sourceId={sourceId}
       onChange={onChange}
       onDelete={onDelete}
       onReorderUp={onReorderUp}
@@ -216,22 +260,11 @@ export function PropertyPanel({
 
 function PropertyPanelBody({
   block,
-  sourceId,
   onChange,
   onDelete,
   onReorderUp,
   onReorderDown,
 }: PropertyPanelBodyProps) {
-  const { color: autoColor } = useAutoInverse(sourceId, block, block.autoInverse)
-
-  useEffect(() => {
-    if (!block.autoInverse) return
-    if (autoColor === block.color) return
-    onChange({ ...block, color: autoColor })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoColor, block.autoInverse, block.color])
-
-  const displayColor = block.autoInverse ? autoColor : block.color
   const selectedFontFamily = familyFromFontId(block.fontId)
   const hasOutline = block.outline.enabled
   const hasShadow = block.shadow.enabled
@@ -264,6 +297,14 @@ function PropertyPanelBody({
             {block.text.length} / 500
           </p>
         </div>
+      </PanelSection>
+
+      <PanelSection title="Position">
+        <SnapGrid
+          xPct={block.xPct}
+          yPct={block.yPct}
+          onSnap={(xPct, yPct) => onChange({ ...block, xPct, yPct })}
+        />
       </PanelSection>
 
       <PanelSection title="Font">
@@ -388,13 +429,12 @@ function PropertyPanelBody({
           <ColorControl
             id="text-color"
             label="Text color"
-            value={displayColor}
-            disabled={block.autoInverse}
+            value={block.color}
             onChange={(color) => onChange({ ...block, color })}
           />
           <SwitchRow
             id="auto-inverse"
-            label="Auto inverse"
+            label="Invert"
             checked={block.autoInverse}
             onCheckedChange={(autoInverse) =>
               onChange({ ...block, autoInverse })

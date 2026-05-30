@@ -1,5 +1,6 @@
 "use client"
 
+import { getFontCssVar } from "@/server/remix/font-metadata"
 import type { TextBlock } from "@/server/remix/types"
 
 import { TextBlockNode } from "./TextBlockNode"
@@ -16,11 +17,11 @@ type CanvasProps = {
 }
 
 const FONT_FAMILIES: Record<TextBlock["fontId"], string> = {
-  satoshi: "Satoshi",
-  "clash-display": "ClashDisplay",
-  fraunces: "Fraunces",
-  "jetbrains-mono": "JetBrainsMono",
-  caveat: "Caveat",
+  satoshi: getFontCssVar("satoshi"),
+  "clash-display": getFontCssVar("clash-display"),
+  fraunces: getFontCssVar("fraunces"),
+  "jetbrains-mono": getFontCssVar("jetbrains-mono"),
+  caveat: getFontCssVar("caveat"),
 }
 
 function getTextAnchor(alignment: TextBlock["alignment"]): "start" | "middle" | "end" {
@@ -67,6 +68,7 @@ export function Canvas({
             fontWeight={block.fontWeight === "bold" ? 700 : 400}
             fontStyle={block.italic ? "italic" : "normal"}
             fill={block.color}
+            style={block.autoInverse ? { mixBlendMode: "difference" } : undefined}
             textAnchor={getTextAnchor(block.alignment)}
             dominantBaseline="middle"
             letterSpacing={block.letterSpacing}

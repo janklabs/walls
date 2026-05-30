@@ -58,7 +58,7 @@ export async function insertFile({
   parentId?: number
   nsfw?: number
   publicVisibility?: boolean
-  remixConfig?: import("../remix/types").RemixConfig
+  remixConfig?: RemixConfig
 }): Promise<{ id: number }> {
   const result = await db
     .insert(file)

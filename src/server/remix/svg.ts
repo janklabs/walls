@@ -1,4 +1,4 @@
-import { getEmbeddedFontFaceCss, getFontFamily } from "./fonts"
+import { getFontFamily } from "./font-metadata"
 import type { RemixConfig, TextBlock } from "./types"
 
 function escapeXml(input: string): string {
@@ -143,6 +143,8 @@ function renderBlock(block: TextBlock, imageW: number, imageH: number, stripBlur
   const italic = block.italic ? "italic" : "normal"
   const fontWeightCss = block.fontWeight === "bold" ? "700" : "400"
 
+  const styleAttr = ""
+
   const textAttrs: string[] = [
     `font-family="${escapeXmlAttr(fontFamily)}"`,
     `font-size="${block.fontSize}"`,
@@ -179,7 +181,7 @@ function renderBlock(block: TextBlock, imageW: number, imageH: number, stripBlur
     })
     .join("")
 
-  parts.push(`<text ${textAttrs.join(" ")}>${tspans}</text>`)
+  parts.push(`<text ${textAttrs.join(" ")}${styleAttr}>${tspans}</text>`)
 
   return parts.join("")
 }
@@ -188,11 +190,14 @@ export function buildRemixSvg(
   config: RemixConfig,
   imageW: number,
   imageH: number,
-  options?: { stripBlurMarkers?: boolean },
+  options?: { stripBlurMarkers?: boolean; blockFilter?: (block: TextBlock) => boolean },
 ): string {
   const stripBlurMarkers = options?.stripBlurMarkers === true
+  const blockFilter = options?.blockFilter ?? (() => true)
 
-  const shadowFilters = config.blocks
+  const blocks = config.blocks.filter(blockFilter)
+
+  const shadowFilters = blocks
     .filter((block) => block.shadow.enabled)
     .map((block) => {
       const stdDev = Math.max(0, block.shadow.blur / 2)
@@ -200,16 +205,13 @@ export function buildRemixSvg(
     })
     .join("")
 
-  const fontCss = getEmbeddedFontFaceCss()
-
-  const body = config.blocks
+  const body = blocks
     .map((block) => renderBlock(block, imageW, imageH, stripBlurMarkers))
     .join("")
 
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${imageW}" height="${imageH}" viewBox="0 0 ${imageW} ${imageH}">` +
     `<defs>` +
-    `<style type="text/css"><![CDATA[\n${fontCss}\n]]></style>` +
     shadowFilters +
     `</defs>` +
     body +

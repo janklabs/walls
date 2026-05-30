@@ -77,7 +77,7 @@ export function RemixEditor({
   initialConfig,
   sourceOwnerId,
   sessionUserId,
-  isOwner,
+  isOwner: _isOwner,
   isAdmin,
 }: RemixEditorProps) {
   const router = useRouter()
@@ -93,6 +93,7 @@ export function RemixEditor({
   function addTextBlock() {
     if (blocks.length >= 10) {
       toast.warning("Maximum 10 text blocks reached")
+      return
     }
 
     const block = createTextBlock()
@@ -186,7 +187,6 @@ export function RemixEditor({
 
         <PropertyPanel
           block={selectedBlock}
-          sourceId={sourceId}
           onChange={updateBlock}
           onDelete={() => selectedBlockId && deleteBlock(selectedBlockId)}
           onReorderUp={() => selectedBlockId && moveBlockUp(selectedBlockId)}

@@ -9,12 +9,33 @@ import {
   insertFile,
 } from "../db/queries"
 import { file } from "../db/schema"
+import { FONTS } from "../remix/font-metadata"
 import { buildRemixSvg } from "../remix/svg"
 import { RemixConfigSchema, type RemixConfig, type TextBlock } from "../remix/types"
 
+import { Resvg } from "@resvg/resvg-js"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
+import path from "path"
 import sharp from "sharp"
+
+const FONT_FILES = [
+  ...FONTS.map((f) => path.join(process.cwd(), "fonts", f.serverFile)),
+  path.join(process.cwd(), "fonts", "Satoshi-VariableItalic.ttf"),
+]
+
+function rasterizeSvg(svg: string, width: number): Buffer {
+  const resvg = new Resvg(svg, {
+    background: "rgba(0,0,0,0)",
+    fitTo: { mode: "width", value: width },
+    font: {
+      loadSystemFonts: false,
+      fontFiles: FONT_FILES,
+      defaultFontFamily: "Satoshi Variable",
+    },
+  })
+  return Buffer.from(resvg.render().asPng())
+}
 
 type SaveRemixResult =
   | { status: "success"; fileId: number }
@@ -87,6 +108,10 @@ export async function saveRemix(input: {
     return { status: "error", message: "Account is blocked" }
   }
 
+  if (input.mode !== "overwrite" && input.mode !== "new-variant") {
+    return { status: "error", message: "Invalid save mode" }
+  }
+
   const parsed = RemixConfigSchema.safeParse(input.config)
   if (!parsed.success) {
     const firstIssue = parsed.error.issues[0]
@@ -100,9 +125,6 @@ export async function saveRemix(input: {
   const sourceMd = await getImageMd(input.sourceId)
   if (!sourceMd) return { status: "error", message: "Source wallpaper not found" }
 
-  const imageBytes = await getImage(sourceMd.name)
-  if (!imageBytes) return { status: "error", message: "Source image data not found" }
-
   const isOwner = sourceMd.uploader.id === session.user.id
   const isAdmin = session.user.isAdmin === true
 
@@ -110,7 +132,12 @@ export async function saveRemix(input: {
     if (!isOwner && !isAdmin) {
       return { status: "error", message: "You do not own this image" }
     }
+  } else if (!isOwner && !isAdmin && !sourceMd.publicVisibility) {
+    return { status: "error", message: "Source wallpaper is private" }
   }
+
+  const imageBytes = await getImage(sourceMd.name)
+  if (!imageBytes) return { status: "error", message: "Source image data not found" }
 
   const width = sourceMd.width
   const height = sourceMd.height
@@ -120,9 +147,16 @@ export async function saveRemix(input: {
 
   let finalBuf: Buffer
   try {
-    const svgString = buildRemixSvg(parsedConfig, width, height, {
+    const normalSvg = buildRemixSvg(parsedConfig, width, height, {
       stripBlurMarkers: true,
+      blockFilter: (block) => !block.autoInverse,
     })
+    const invertSvg = buildRemixSvg(parsedConfig, width, height, {
+      stripBlurMarkers: true,
+      blockFilter: (block) => block.autoInverse,
+    })
+    const hasInvert = parsedConfig.blocks.some((b) => b.autoInverse)
+    const hasNormal = parsedConfig.blocks.some((b) => !b.autoInverse)
 
     const sourceBuf = Buffer.from(imageBytes)
     const blurPrepped = await applyBlurBehindRegions(
@@ -131,10 +165,19 @@ export async function saveRemix(input: {
       { width, height },
     )
 
-    finalBuf = await sharp(blurPrepped)
-      .composite([{ input: Buffer.from(svgString), top: 0, left: 0 }])
-      .toFormat("jpeg")
-      .toBuffer()
+    const overlays: sharp.OverlayOptions[] = []
+    if (hasNormal) {
+      const png = rasterizeSvg(normalSvg, width)
+      overlays.push({ input: png, top: 0, left: 0, blend: "over" })
+    }
+    if (hasInvert) {
+      const png = rasterizeSvg(invertSvg, width)
+      overlays.push({ input: png, top: 0, left: 0, blend: "difference" })
+    }
+
+    finalBuf = overlays.length === 0
+      ? await sharp(blurPrepped).toFormat("jpeg").toBuffer()
+      : await sharp(blurPrepped).composite(overlays).toFormat("jpeg").toBuffer()
   } catch (e) {
     return {
       status: "error",
