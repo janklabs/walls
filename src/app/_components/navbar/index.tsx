@@ -60,13 +60,15 @@ export async function Navbar() {
         {session ? (
           <Link href={`/profile/${session.user.id}`}>
             <Button variant="secondary">
-              <Image
-                src={session.user.image ?? ""}
-                alt={session.user.name ?? ""}
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
+              {session.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name ?? ""}
+                  width={24}
+                  height={24}
+                  className="rounded-full"
+                />
+              ) : null}
               {session.user.name}
             </Button>
           </Link>

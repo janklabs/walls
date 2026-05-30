@@ -110,13 +110,15 @@ export default async function Page({
             href={`/profile/${image.uploader.id}`}
             className="flex items-center gap-2 rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-900"
           >
-            <Image
-              src={image.uploader.image ?? ""}
-              alt={image.uploader.name ?? ""}
-              width={24}
-              height={24}
-              className="rounded-full"
-            />
+            {image.uploader.image ? (
+              <Image
+                src={image.uploader.image}
+                alt={image.uploader.name ?? ""}
+                width={24}
+                height={24}
+                className="rounded-full"
+              />
+            ) : null}
             <p>{image.uploader.name}</p>
           </Link>
         </div>

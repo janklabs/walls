@@ -87,6 +87,17 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
+        before: async (user) => {
+          // Magic-link signups arrive with no name. Derive a sensible default
+          // from the email prefix so the UI always has something to render.
+          const hasName = typeof user.name === "string" && user.name.trim().length > 0
+          if (hasName || !user.email) {
+            return { data: user }
+          }
+          const prefix = user.email.split("@")[0] ?? ""
+          const derivedName = prefix.trim().length > 0 ? prefix : "User"
+          return { data: { ...user, name: derivedName } }
+        },
         after: async (user) => {
           // When a new user is created via sign-up, remove them from the invite list
           if (user.email) {
