@@ -19,6 +19,7 @@ FROM node:22-alpine AS app
 COPY --from=build /src/.next/standalone /app
 COPY --from=build /src/.next/static /app/.next/static
 COPY --from=build /src/public /app/public
+COPY --from=build /src/fonts /app/fonts
 
 EXPOSE 3000
 WORKDIR /app

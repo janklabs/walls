@@ -34,6 +34,39 @@ const Satoshi = localFont({
   variable: "--font-satoshi",
 })
 
+const RemixSatoshi = localFont({
+  src: [
+    { path: "../../fonts/Satoshi-Variable.woff2", style: "normal" },
+    { path: "../../fonts/Satoshi-VariableItalic.woff2", style: "italic" },
+  ],
+  variable: "--font-remix-satoshi",
+  display: "block",
+})
+
+const RemixClashDisplay = localFont({
+  src: "../../fonts/ClashDisplay-Variable.woff2",
+  variable: "--font-remix-clash-display",
+  display: "block",
+})
+
+const RemixFraunces = localFont({
+  src: "../../fonts/Fraunces-Variable.woff2",
+  variable: "--font-remix-fraunces",
+  display: "block",
+})
+
+const RemixJetBrainsMono = localFont({
+  src: "../../fonts/JetBrainsMono-Variable.woff2",
+  variable: "--font-remix-jetbrains-mono",
+  display: "block",
+})
+
+const RemixCaveat = localFont({
+  src: "../../fonts/Caveat-Variable.woff2",
+  variable: "--font-remix-caveat",
+  display: "block",
+})
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -44,6 +77,11 @@ export default function RootLayout({
         GeistSans.variable,
         ClashDisplay.variable,
         Satoshi.variable,
+        RemixSatoshi.variable,
+        RemixClashDisplay.variable,
+        RemixFraunces.variable,
+        RemixJetBrainsMono.variable,
+        RemixCaveat.variable,
       )}
       suppressHydrationWarning
     >

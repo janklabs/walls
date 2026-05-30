@@ -9,6 +9,7 @@ import type { NextConfig } from "next"
 const config: NextConfig = {
   output: "standalone",
   cacheComponents: true,
+  serverExternalPackages: ["@resvg/resvg-js", "sharp"],
   images: {
     remotePatterns: [
       {
