@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { getSession } from "@/server/auth"
 
-import { EmailSignInForm } from "./_components/email-sign-in-form"
+import { OtpSignInForm } from "./_components/email-sign-in-form"
 import { SignInError } from "./_components/sign-in-error"
 
 import { redirect } from "next/navigation"
@@ -31,9 +31,9 @@ export default async function Page({
         <CardContent className="flex flex-col items-center gap-4">
           <SignInError error={error} />
           <p className="text-center text-sm text-muted-foreground">
-            Enter your email to receive a sign-in link.
+            Enter your email to receive a one-time password.
           </p>
-          <EmailSignInForm />
+          <OtpSignInForm />
         </CardContent>
       </Card>
     </div>

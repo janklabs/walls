@@ -13,7 +13,7 @@ import * as schema from "@/server/db/schema"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { createAuthMiddleware } from "better-auth/api"
-import { magicLink } from "better-auth/plugins"
+import { emailOTP, magicLink } from "better-auth/plugins"
 import { createTransport } from "nodemailer"
 
 const transport = createTransport({
@@ -24,6 +24,41 @@ const transport = createTransport({
     pass: env.SMTP_PASSWORD,
   },
 })
+
+async function enforceEmailSignInAccess(email: string) {
+  const normalizedEmail = email.toLowerCase()
+  const blocked = await isUserBlocked(normalizedEmail)
+  if (blocked) {
+    return new Response(
+      JSON.stringify({
+        error: "blocked",
+        message: "This account has been blocked.",
+      }),
+      { status: 403, headers: { "Content-Type": "application/json" } },
+    )
+  }
+
+  const inviteOnly = await isInviteOnly()
+  if (!inviteOnly) return
+
+  const existingUser = await isExistingUser(normalizedEmail)
+  if (existingUser) return
+
+  const invited = await isEmailInvited(normalizedEmail)
+  if (invited) return
+
+  return new Response(
+    JSON.stringify({
+      error: "invite_only",
+      message: "This instance is invite-only.",
+      redirectTo: `/request-access?email=${encodeURIComponent(normalizedEmail)}`,
+    }),
+    {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    },
+  )
+}
 
 export const auth = betterAuth({
   baseURL: env.APP_URL,
@@ -83,6 +118,17 @@ export const auth = betterAuth({
         })
       },
     }),
+    emailOTP({
+      async sendVerificationOTP({ email, otp }) {
+        await transport.sendMail({
+          from: env.SMTP_MAIL_FROM,
+          to: email,
+          subject: "Sign in to Walls",
+          text: `Your OTP is ${otp}`,
+          html: `<p>Your OTP is ${otp}</p>`,
+        })
+      },
+    }),
   ],
   databaseHooks: {
     user: {
@@ -118,45 +164,19 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      // Intercept magic link sign-in to enforce blocked/invite-only checks
-      if (ctx.path === "/sign-in/magic-link") {
+      const protectedEmailSignInPaths = new Set([
+        "/sign-in/magic-link",
+        "/email-otp/send-verification-otp",
+        "/sign-in/email-otp",
+      ])
+
+      // Intercept passwordless sign-in to enforce blocked/invite-only checks.
+      if (protectedEmailSignInPaths.has(ctx.path)) {
         const body = ctx.body as { email?: string } | undefined
         const email = body?.email
         if (!email) return
 
-        // Check if the user is blocked
-        const blocked = await isUserBlocked(email)
-        if (blocked) {
-          return new Response(
-            JSON.stringify({
-              error: "blocked",
-              message: "This account has been blocked.",
-            }),
-            { status: 403, headers: { "Content-Type": "application/json" } },
-          )
-        }
-
-        // Check invite-only mode
-        const inviteOnly = await isInviteOnly()
-        if (inviteOnly) {
-          const existingUser = await isExistingUser(email)
-          if (!existingUser) {
-            const invited = await isEmailInvited(email)
-            if (!invited) {
-              return new Response(
-                JSON.stringify({
-                  error: "invite_only",
-                  message: "This instance is invite-only.",
-                  redirectTo: `/request-access?email=${encodeURIComponent(email)}`,
-                }),
-                {
-                  status: 403,
-                  headers: { "Content-Type": "application/json" },
-                },
-              )
-            }
-          }
-        }
+        return await enforceEmailSignInAccess(email)
       }
     }),
   },

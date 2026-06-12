@@ -8,13 +8,13 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { type ComponentProps, useState } from "react"
 
-export function OtpSignInForm() {
+export function MagicLinkSignInForm() {
   const [email, setEmail] = useState("")
-  const [sendingOtp, setSendingOtp] = useState(false)
+  const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  async function sendOtp() {
+  async function sendMagicLink() {
     setError(null)
     if (!email) {
       setError("Please enter your email address.")
@@ -24,13 +24,12 @@ export function OtpSignInForm() {
     const normalizedEmail = email.trim().toLowerCase()
 
     try {
-      setSendingOtp(true)
+      setSending(true)
 
-      const { error: signInError } =
-        await authClient.emailOtp.sendVerificationOtp({
-          email: normalizedEmail,
-          type: "sign-in",
-        })
+      const { error: signInError } = await authClient.signIn.magicLink({
+        email: normalizedEmail,
+        callbackURL: "/",
+      })
 
       if (signInError) {
         if (signInError.status === 403) {
@@ -45,14 +44,16 @@ export function OtpSignInForm() {
             signInError.message ?? "Something went wrong. Please try again.",
           )
         }
-        setSendingOtp(false)
+        setSending(false)
         return
       }
 
-      router.push(`/signin/otp?email=${encodeURIComponent(normalizedEmail)}`)
+      router.push(
+        `/signin/magic-link?sent=1&email=${encodeURIComponent(normalizedEmail)}`,
+      )
     } catch {
       setError("Something went wrong. Please try again.")
-      setSendingOtp(false)
+      setSending(false)
     }
   }
 
@@ -60,7 +61,7 @@ export function OtpSignInForm() {
     event,
   ) => {
     event.preventDefault()
-    void sendOtp()
+    void sendMagicLink()
   }
 
   return (
@@ -70,19 +71,19 @@ export function OtpSignInForm() {
         placeholder="you@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        disabled={sendingOtp}
+        disabled={sending}
         required
         className="h-11"
         autoFocus
       />
-      <Button type="submit" disabled={sendingOtp} className="h-11">
-        {sendingOtp ? "Sending..." : "Send OTP"}
+      <Button type="submit" disabled={sending} className="h-11">
+        {sending ? "Sending..." : "Send magic link"}
       </Button>
       <Link
-        href="/signin/magic-link"
+        href="/signin"
         className="text-center text-xs text-muted-foreground underline-offset-4 hover:underline"
       >
-        Use a magic link instead
+        Use an OTP instead
       </Link>
       {error && <p className="text-center text-sm text-destructive">{error}</p>}
     </form>
