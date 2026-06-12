@@ -142,28 +142,3 @@ jobs:
           tags: ${{ vars.DOCKER_MIGRATE_IMAGE }}:${{ inputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy-vps:
-    name: Deploy to VPS
-    needs:
-      [
-        docker-push,
-        docker-force-push,
-        docker-push-migrate,
-        docker-force-push-migrate,
-      ]
-    if: always() && (needs.docker-push.result == 'success' || needs.docker-force-push.result == 'success')
-    concurrency:
-      group: deploy-vps
-      cancel-in-progress: false
-    environment: deployment
-    runs-on: ubuntu-latest
-    steps:
-      - name: Make .ssh folder
-        run: mkdir -p ~/.ssh
-      - name: Write SSH private key
-        run: echo '${{ secrets.GILGAMESH_SSH_PRIVATE_KEY }}' > ~/.ssh/id_rsa
-      - name: Set permissions for SSH private key
-        run: chmod 400 ~/.ssh/id_rsa
-      - name: SSH into server
-        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GILGAMESH_SSH_USER }}@${{ secrets.GILGAMESH_SSH_HOST }} ${{ vars.SSH_COMMAND }}
